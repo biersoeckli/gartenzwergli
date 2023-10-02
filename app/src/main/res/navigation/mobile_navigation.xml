@@ -6,20 +6,20 @@
     app:startDestination="@+id/navigation_home">
 
     <fragment
-        android:id="@+id/navigation_home"
-        android:name="ch.ost.gartenzwergli.ui.home.HomeFragment"
-        android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
-
-    <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="ch.ost.gartenzwergli.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
+        android:id="@+id/navigation_crops"
+        android:name="ch.ost.gartenzwergli.ui.crops.CropsFragment"
+        android:label="@string/title_crops"
         tools:layout="@layout/fragment_dashboard" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
+        android:id="@+id/navigation_home"
+        android:name="ch.ost.gartenzwergli.ui.home.HomeFragment"
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/navigation_beds"
         android:name="ch.ost.gartenzwergli.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
+        android:label="@string/title_beds"
         tools:layout="@layout/fragment_notifications" />
 </navigation>
