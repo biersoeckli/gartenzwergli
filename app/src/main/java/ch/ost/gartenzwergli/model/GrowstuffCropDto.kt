@@ -1,9 +1,7 @@
 package ch.ost.gartenzwergli.model
 
-import com.google.gson.annotations.SerializedName
 
-
-data class CropDto(
+data class GrowstuffCropDto(
     val _index: String,
     val _type: String,
     val _id: String,
@@ -18,7 +16,7 @@ data class CropDto(
     val harvests_count: Int,
     val planters_ids: List<Int>,
     val has_photos: Boolean,
-    val thumbnail_url: String,
+    val thumbnail_url: String?,
     val scientific_name: String,
     val created_at: Long,
     val id: String

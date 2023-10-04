@@ -6,13 +6,12 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-const val BASEURL = "https://www.growstuff.org/"
 
 
-class GrowstuffApiClient {
+class RestClient {
     companion object{
         private var retrofit:Retrofit?=null
-        fun getApiClient(): GrowstuffApi {
+        fun getApiClient(baseUrl: String): Retrofit {
             val gson = GsonBuilder()
                 .setLenient()
                 .create()
@@ -22,12 +21,19 @@ class GrowstuffApiClient {
                 .build()
             if (retrofit == null) {
                 retrofit = Retrofit.Builder()
-                    .baseUrl(BASEURL)
+                    .baseUrl(baseUrl)
                     .client(okHttpClient)
                     .addConverterFactory(GsonConverterFactory.create(gson))
                     .build()
             }
-            return retrofit?.create(GrowstuffApi::class.java)!!
+            return retrofit!!
+        }
+
+        fun getGrowstuffClient(): GrowstuffApi {
+            return getApiClient("https://www.growstuff.org/").create(GrowstuffApi::class.java)
+        }
+        fun getOpenFarmClient(): OpenFarmApi {
+            return getApiClient("https://openfarm.cc/api/v1/").create(OpenFarmApi::class.java)
         }
     }
 

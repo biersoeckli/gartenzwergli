@@ -15,10 +15,8 @@ import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.lifecycle.Lifecycle
 import ch.ost.gartenzwergli.R
-import ch.ost.gartenzwergli.model.CropDto
-import ch.ost.gartenzwergli.services.GrowstuffApi
-import ch.ost.gartenzwergli.services.GrowstuffApiClient
-import ch.ost.gartenzwergli.ui.crops.placeholder.PlaceholderContent
+import ch.ost.gartenzwergli.model.GrowstuffCropDto
+import ch.ost.gartenzwergli.services.RestClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -52,12 +50,12 @@ class CropsFragment : Fragment() {
                 }
 
 
-                val apiService = GrowstuffApiClient.getApiClient()
-                val call: Call<List<CropDto>> = apiService.getCrops()
-                call.enqueue(object : Callback<List<CropDto>> {
+                val apiService = RestClient.getGrowstuffClient()
+                val call: Call<List<GrowstuffCropDto>> = apiService.getCrops()
+                call.enqueue(object : Callback<List<GrowstuffCropDto>> {
                     override fun onResponse(
-                        call: Call<List<CropDto>>,
-                        response: Response<List<CropDto>>
+                        call: Call<List<GrowstuffCropDto>>,
+                        response: Response<List<GrowstuffCropDto>>
                     ) {
                         if (response.isSuccessful) {
                             val cropsList = response.body()
@@ -68,7 +66,7 @@ class CropsFragment : Fragment() {
                         }
                     }
 
-                    override fun onFailure(call: Call<List<CropDto>>, t: Throwable) {
+                    override fun onFailure(call: Call<List<GrowstuffCropDto>>, t: Throwable) {
                         // Todo Fehlerbehandlung
                     }
                 })
