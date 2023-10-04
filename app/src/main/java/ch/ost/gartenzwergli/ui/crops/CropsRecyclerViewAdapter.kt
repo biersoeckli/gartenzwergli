@@ -9,13 +9,10 @@ import ch.ost.gartenzwergli.R
 
 import ch.ost.gartenzwergli.ui.crops.placeholder.PlaceholderContent.PlaceholderItem
 import ch.ost.gartenzwergli.databinding.CropItemBinding
+import ch.ost.gartenzwergli.model.CropDto
 
-/**
- * [RecyclerView.Adapter] that can display a [PlaceholderItem].
- * TODO: Replace the implementation with code for your data type.
- */
 class CropsRecyclerViewAdapter(
-    private val values: List<PlaceholderItem>
+    private val values: List<CropDto>
 ) : RecyclerView.Adapter<CropsRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -33,7 +30,7 @@ class CropsRecyclerViewAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = values[position]
         holder.idView.text = item.id
-        holder.contentView.text = item.content
+        holder.contentView.text = item.name
     }
 
     override fun getItemCount(): Int = values.size

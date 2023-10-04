@@ -8,6 +8,12 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import ch.ost.gartenzwergli.databinding.FragmentHomeBinding
+import ch.ost.gartenzwergli.model.CropDto
+import ch.ost.gartenzwergli.services.GrowstuffApi
+import ch.ost.gartenzwergli.services.GrowstuffApiClient
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class HomeFragment : Fragment() {
 
@@ -34,6 +40,8 @@ class HomeFragment : Fragment() {
             textView.text = it
         }
                */
+
+
         return root
     }
 

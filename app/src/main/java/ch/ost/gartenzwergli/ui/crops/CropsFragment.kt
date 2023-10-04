@@ -15,7 +15,13 @@ import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.lifecycle.Lifecycle
 import ch.ost.gartenzwergli.R
+import ch.ost.gartenzwergli.model.CropDto
+import ch.ost.gartenzwergli.services.GrowstuffApi
+import ch.ost.gartenzwergli.services.GrowstuffApiClient
 import ch.ost.gartenzwergli.ui.crops.placeholder.PlaceholderContent
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 /**
  * A fragment representing a list of Items.
@@ -26,7 +32,6 @@ class CropsFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         arguments?.let {
             columnCount = it.getInt(ARG_COLUMN_COUNT)
         }
@@ -45,7 +50,28 @@ class CropsFragment : Fragment() {
                     columnCount <= 1 -> LinearLayoutManager(context)
                     else -> GridLayoutManager(context, columnCount)
                 }
-                adapter = CropsRecyclerViewAdapter(PlaceholderContent.ITEMS)
+
+
+                val apiService = GrowstuffApiClient.getApiClient()
+                val call: Call<List<CropDto>> = apiService.getCrops()
+                call.enqueue(object : Callback<List<CropDto>> {
+                    override fun onResponse(
+                        call: Call<List<CropDto>>,
+                        response: Response<List<CropDto>>
+                    ) {
+                        if (response.isSuccessful) {
+                            val cropsList = response.body()
+                            if (cropsList != null)
+                                adapter = CropsRecyclerViewAdapter(cropsList)
+                        } else {
+                            // Todo Fehlerbehandlung
+                        }
+                    }
+
+                    override fun onFailure(call: Call<List<CropDto>>, t: Throwable) {
+                        // Todo Fehlerbehandlung
+                    }
+                })
             }
         }
         return view
@@ -57,7 +83,7 @@ class CropsFragment : Fragment() {
     }
 
     private fun setupAppBarMenu() {
-        (requireActivity() as MenuHost).addMenuProvider(object: MenuProvider {
+        (requireActivity() as MenuHost).addMenuProvider(object : MenuProvider {
 
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.crops_app_bar_menu, menu)
