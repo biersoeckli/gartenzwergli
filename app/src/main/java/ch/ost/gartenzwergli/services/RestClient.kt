@@ -1,9 +1,12 @@
 package ch.ost.gartenzwergli.services
 
+import ch.ost.gartenzwergli.services.interfaces.GrowstuffApi
+import ch.ost.gartenzwergli.services.interfaces.OpenFarmApi
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.concurrent.TimeUnit
 
 
@@ -24,6 +27,7 @@ class RestClient {
                     .baseUrl(baseUrl)
                     .client(okHttpClient)
                     .addConverterFactory(GsonConverterFactory.create(gson))
+                    .addConverterFactory(MoshiConverterFactory.create())
                     .build()
             }
             return retrofit!!

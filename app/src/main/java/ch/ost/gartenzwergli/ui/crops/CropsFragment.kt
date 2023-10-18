@@ -14,17 +14,24 @@ import android.view.ViewGroup
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.lifecycle.Lifecycle
+import androidx.room.Database
 import ch.ost.gartenzwergli.R
 import ch.ost.gartenzwergli.model.GrowstuffCropDto
+import ch.ost.gartenzwergli.services.DataStorage
+import ch.ost.gartenzwergli.services.DatabaseService
 import ch.ost.gartenzwergli.services.RestClient
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import kotlin.coroutines.CoroutineContext
 
 /**
  * A fragment representing a list of Items.
  */
-class CropsFragment : Fragment() {
+class CropsFragment : Fragment(), CoroutineScope {
 
     private var columnCount = 1
 
@@ -49,27 +56,11 @@ class CropsFragment : Fragment() {
                     else -> GridLayoutManager(context, columnCount)
                 }
 
+                launch {
+                   val cropDbos = DatabaseService.getDb().cropDao().getAll()
+                    adapter = CropsRecyclerViewAdapter(cropDbos)
+                }
 
-                val apiService = RestClient.getGrowstuffClient()
-                val call: Call<List<GrowstuffCropDto>> = apiService.getCrops()
-                call.enqueue(object : Callback<List<GrowstuffCropDto>> {
-                    override fun onResponse(
-                        call: Call<List<GrowstuffCropDto>>,
-                        response: Response<List<GrowstuffCropDto>>
-                    ) {
-                        if (response.isSuccessful) {
-                            val cropsList = response.body()
-                            if (cropsList != null)
-                                adapter = CropsRecyclerViewAdapter(cropsList)
-                        } else {
-                            // Todo Fehlerbehandlung
-                        }
-                    }
-
-                    override fun onFailure(call: Call<List<GrowstuffCropDto>>, t: Throwable) {
-                        // Todo Fehlerbehandlung
-                    }
-                })
             }
         }
         return view
@@ -108,4 +99,7 @@ class CropsFragment : Fragment() {
                 }
             }
     }
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main
 }

@@ -19,6 +19,6 @@ data class GrowstuffCropDto(
     val thumbnail_url: String?,
     val scientific_name: String,
     val created_at: Long,
-    val id: String
+    val id: String?
 
 )
