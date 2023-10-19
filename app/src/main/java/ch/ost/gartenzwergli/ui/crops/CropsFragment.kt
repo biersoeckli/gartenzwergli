@@ -14,19 +14,29 @@ import android.view.ViewGroup
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.lifecycle.Lifecycle
+import androidx.room.Database
 import ch.ost.gartenzwergli.R
-import ch.ost.gartenzwergli.ui.crops.placeholder.PlaceholderContent
+import ch.ost.gartenzwergli.model.GrowstuffCropDto
+import ch.ost.gartenzwergli.services.DataStorage
+import ch.ost.gartenzwergli.services.DatabaseService
+import ch.ost.gartenzwergli.services.RestClient
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import kotlin.coroutines.CoroutineContext
 
 /**
  * A fragment representing a list of Items.
  */
-class CropsFragment : Fragment() {
+class CropsFragment : Fragment(), CoroutineScope {
 
     private var columnCount = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         arguments?.let {
             columnCount = it.getInt(ARG_COLUMN_COUNT)
         }
@@ -45,7 +55,12 @@ class CropsFragment : Fragment() {
                     columnCount <= 1 -> LinearLayoutManager(context)
                     else -> GridLayoutManager(context, columnCount)
                 }
-                adapter = CropsRecyclerViewAdapter(PlaceholderContent.ITEMS)
+
+                launch {
+                   val cropDbos = DatabaseService.getDb().cropDao().getAll()
+                    adapter = CropsRecyclerViewAdapter(cropDbos)
+                }
+
             }
         }
         return view
@@ -57,7 +72,7 @@ class CropsFragment : Fragment() {
     }
 
     private fun setupAppBarMenu() {
-        (requireActivity() as MenuHost).addMenuProvider(object: MenuProvider {
+        (requireActivity() as MenuHost).addMenuProvider(object : MenuProvider {
 
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.crops_app_bar_menu, menu)
@@ -84,4 +99,7 @@ class CropsFragment : Fragment() {
                 }
             }
     }
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main
 }

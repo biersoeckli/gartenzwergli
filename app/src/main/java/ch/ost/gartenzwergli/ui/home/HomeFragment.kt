@@ -62,8 +62,8 @@ class HomeFragment : Fragment() {
         val cropCalendar: CalendarView = binding.calendarViewCropCalendar
         cropCalendar.setEvents(listOf(event));
 
-
         setupAppBarMenu()
+
         return root
     }
 

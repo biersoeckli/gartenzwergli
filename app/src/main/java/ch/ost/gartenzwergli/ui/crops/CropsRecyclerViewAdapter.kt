@@ -1,21 +1,18 @@
 package ch.ost.gartenzwergli.ui.crops
 
-import androidx.recyclerview.widget.RecyclerView
+import android.graphics.BitmapFactory
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
-import ch.ost.gartenzwergli.R
-
-import ch.ost.gartenzwergli.ui.crops.placeholder.PlaceholderContent.PlaceholderItem
+import androidx.recyclerview.widget.RecyclerView
 import ch.ost.gartenzwergli.databinding.CropItemBinding
+import ch.ost.gartenzwergli.model.dbo.CropDbo
+import java.io.File
 
-/**
- * [RecyclerView.Adapter] that can display a [PlaceholderItem].
- * TODO: Replace the implementation with code for your data type.
- */
+
 class CropsRecyclerViewAdapter(
-    private val values: List<PlaceholderItem>
+    private val values: List<CropDbo>
 ) : RecyclerView.Adapter<CropsRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -32,18 +29,25 @@ class CropsRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = values[position]
-        holder.idView.text = item.id
-        holder.contentView.text = item.content
+        holder.plantNameTextView.text = item.name
+
+        if (item.thumnailPath != null) {
+            val imgFile = File(item.thumnailPath!!);
+            if (imgFile.exists()) {
+                val bmp = BitmapFactory.decodeFile(imgFile.absolutePath);
+                holder.thumbnailImageView.setImageBitmap(bmp)
+            }
+        }
     }
 
     override fun getItemCount(): Int = values.size
 
     inner class ViewHolder(binding: CropItemBinding) : RecyclerView.ViewHolder(binding.root) {
-        val idView: TextView = binding.itemNumber
-        val contentView: TextView = binding.content
+        val thumbnailImageView: ImageView = binding.thumbnailmageView
+        val plantNameTextView: TextView = binding.plantName
 
         override fun toString(): String {
-            return super.toString() + " '" + contentView.text + "'"
+            return super.toString() + " '" + plantNameTextView.text + "'"
         }
     }
 
