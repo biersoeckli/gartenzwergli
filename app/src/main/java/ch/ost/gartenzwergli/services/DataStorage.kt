@@ -2,7 +2,9 @@ package ch.ost.gartenzwergli.services
 
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
+import ch.ost.gartenzwergli.model.GrowstuffCropDto
 import ch.ost.gartenzwergli.model.dbo.CropDbo
 import ch.ost.gartenzwergli.model.dbo.ParameterDbo
 import ch.ost.gartenzwergli.services.interfaces.AppDatabase
@@ -49,6 +51,7 @@ class DataStorage() {
 
     private suspend fun syncImagesForCrops(ctx: Context) {
 
+        Log.d("Crop Sync", "Loading images for crops...")
         withContext(Dispatchers.IO) {
             val allCrops = db.cropDao().getAll()
             allCrops
@@ -80,17 +83,36 @@ class DataStorage() {
                 }
             val cropsWithThumbnailPath = allCrops.filter { crop -> crop.thumnailPath != null }
             db.cropDao().updateAll(*cropsWithThumbnailPath.toTypedArray())
+            Log.d("Crop Sync", "Successfully loaded ${cropsWithThumbnailPath.size} crop images.")
         }
     }
 
     private suspend fun syncCrops() {
-        val response = RestClient.getGrowstuffClient().getCrops()
-        if (!response.isSuccessful) {
-            throw Exception("Could not fetch crops from growstuff")
-        }
-        val apiCrops = response.body()
         val existingCropDbos = db.cropDao().getAll()
 
+        var totalCropCount = 0;
+        var pageCounter = 0;
+        while (true) {
+            pageCounter++
+            val response = RestClient.getGrowstuffClient().getCrops(pageCounter)
+            if (!response.isSuccessful) {
+                break;
+            }
+            val apiCrops = response.body()
+            if (apiCrops.isNullOrEmpty()) {
+                break;
+            }
+            Log.d("Crop Sync", "Processing page $pageCounter")
+            totalCropCount += apiCrops.size
+            syncCrops(apiCrops, existingCropDbos)
+        }
+        Log.d("Crop Sync", "Total crops synched: $totalCropCount")
+    }
+
+    private fun syncCrops(
+        apiCrops: List<GrowstuffCropDto>?,
+        existingCropDbos: List<CropDbo>
+    ) {
         val mappedCropDbosFromApi = apiCrops!!
             .filter { crop -> crop != null && crop.id != null }
             .map { crop ->
