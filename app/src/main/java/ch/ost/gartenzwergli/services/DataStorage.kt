@@ -5,6 +5,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import ch.ost.gartenzwergli.model.dbo.CropDbo
 import ch.ost.gartenzwergli.model.dbo.ParameterDbo
+import ch.ost.gartenzwergli.model.dbo.cropevent.CropEventDbo
 import ch.ost.gartenzwergli.services.interfaces.AppDatabase
 import ch.ost.gartenzwergli.utils.CropDboUtils
 import kotlinx.coroutines.Dispatchers
@@ -126,6 +127,12 @@ class DataStorage() {
                 }
             }
             db.cropDao().updateAll(*updatedCrops.toTypedArray())
+        }
+    }
+
+    suspend fun insertCropEvent(cropEvent: CropEventDbo) {
+        withContext(Dispatchers.IO) {
+            db.cropEventDao().insertAll(cropEvent)
         }
     }
 }
