@@ -51,7 +51,7 @@ class CropsFragment : Fragment(), CoroutineScope {
 
                 launch {
                    val cropDbos = DatabaseService.getDb().cropDao().getAll()
-                    adapter = CropsRecyclerViewAdapter(cropDbos)
+                    adapter = CropsRecyclerViewAdapter(cropDbos, view.context)
                 }
 
             }

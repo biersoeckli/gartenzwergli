@@ -155,7 +155,6 @@ class DataStorage() {
         }
     }
 
-
     suspend fun syncDetailCropDboIfNeeded(cropDboId: String) {
         val crop = db.cropDao().findById(cropDboId)
         if (crop.detailsFetched) {
