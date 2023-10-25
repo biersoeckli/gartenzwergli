@@ -1,4 +1,4 @@
-package ch.ost.gartenzwergli.model
+package ch.ost.gartenzwergli.model.dto.growstuff
 
 
 data class GrowstuffCropDto(

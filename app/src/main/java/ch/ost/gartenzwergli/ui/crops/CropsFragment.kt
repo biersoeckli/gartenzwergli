@@ -14,18 +14,11 @@ import android.view.ViewGroup
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.lifecycle.Lifecycle
-import androidx.room.Database
 import ch.ost.gartenzwergli.R
-import ch.ost.gartenzwergli.model.GrowstuffCropDto
-import ch.ost.gartenzwergli.services.DataStorage
 import ch.ost.gartenzwergli.services.DatabaseService
-import ch.ost.gartenzwergli.services.RestClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -58,7 +51,7 @@ class CropsFragment : Fragment(), CoroutineScope {
 
                 launch {
                    val cropDbos = DatabaseService.getDb().cropDao().getAll()
-                    adapter = CropsRecyclerViewAdapter(cropDbos)
+                    adapter = CropsRecyclerViewAdapter(cropDbos, view.context)
                 }
 
             }

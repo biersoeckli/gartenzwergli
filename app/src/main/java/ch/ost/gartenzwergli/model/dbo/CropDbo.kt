@@ -1,8 +1,6 @@
 package ch.ost.gartenzwergli.model.dbo
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import java.util.UUID
@@ -19,4 +17,8 @@ data class CropDbo(
     val scientificName: String?,
     val thumbnailUrl: String?,
     var thumnailPath: String?,
+    var height: Double?,
+    var spread: Double?,
+    var medianDaysForFirstHarvest: Int?,
+    var detailsFetched: Boolean = false
 )
