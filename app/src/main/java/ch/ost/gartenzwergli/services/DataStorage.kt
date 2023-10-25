@@ -159,7 +159,9 @@ class DataStorage() {
     suspend fun insertCropEvent(cropEvent: CropEventDbo) {
         withContext(Dispatchers.IO) {
             db.cropEventDao().insertAll(cropEvent)
-    
+        }
+    }
+
     suspend fun syncDetailCropDboIfNeeded(cropDboId: String) {
         val crop = db.cropDao().findById(cropDboId)
         if (crop.detailsFetched) {
