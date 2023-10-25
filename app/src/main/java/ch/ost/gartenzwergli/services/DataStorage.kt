@@ -168,7 +168,7 @@ class DataStorage() {
         val allCropDbos = db.cropDao().getAll()
         var index = 0;
         allCropDbos.forEach { cropDbo ->
-            if (index % 30 == 0 || index == (allCropDbos.size - 1)) {
+            if (index % 30 == 0 || index == allCropDbos.size) {
                 Log.d("Crop Sync", "Loading detail data for crop ($index/${allCropDbos.size})")
             }
             addCropDetailData(cropDbo)
