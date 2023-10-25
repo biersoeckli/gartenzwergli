@@ -4,11 +4,12 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import ch.ost.gartenzwergli.model.GrowstuffCropDto
 import ch.ost.gartenzwergli.model.dbo.CropDbo
 import ch.ost.gartenzwergli.model.dbo.ParameterDbo
+import ch.ost.gartenzwergli.model.dto.growstuff.GrowstuffCropDto
 import ch.ost.gartenzwergli.services.interfaces.AppDatabase
 import ch.ost.gartenzwergli.utils.CropDboUtils
+import com.google.gson.internal.LinkedTreeMap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -37,8 +38,9 @@ class DataStorage() {
         val lastUpdateParamKey = "lastUpdate"
         val lastUpdate = db.parameterDao().findByKey(lastUpdateParamKey)
         if (lastUpdate == null) {
-            syncCrops()
+            syncAllCrops()
             syncImagesForCrops(ctx)
+            syncAllDetailCropDataWithApi() // takes a long time^^
             db.parameterDao().insertAll(
                 ParameterDbo(
                     lastUpdateParamKey,
@@ -87,7 +89,7 @@ class DataStorage() {
         }
     }
 
-    private suspend fun syncCrops() {
+    private suspend fun syncAllCrops() {
         val existingCropDbos = db.cropDao().getAll()
 
         var totalCropCount = 0;
@@ -124,6 +126,9 @@ class DataStorage() {
                     crop.slug,
                     crop.scientific_name,
                     crop.thumbnail_url,
+                    null,
+                    null,
+                    null,
                     null
                 )
             }
@@ -148,6 +153,49 @@ class DataStorage() {
                 }
             }
             db.cropDao().updateAll(*updatedCrops.toTypedArray())
+        }
+    }
+
+
+    suspend fun syncDetailCropDboByCropId(cropDboId: String) {
+        val crop = db.cropDao().findById(cropDboId)
+        addCropDetailData(crop)
+        db.cropDao().updateAll(crop)
+    }
+
+    suspend fun syncAllDetailCropDataWithApi() {
+        Log.d("Crop Sync", "Loading detail data for all crops...")
+        val allCropDbos = db.cropDao().getAll()
+        var index = 0;
+        allCropDbos.forEach { cropDbo ->
+            if (index % 30 == 0 || index == (allCropDbos.size - 1)) {
+                Log.d("Crop Sync", "Loading detail data for crop ($index/${allCropDbos.size})")
+            }
+            addCropDetailData(cropDbo)
+            index++
+        }
+        Log.d("Crop Sync", "Successfully loaded detail data for ${allCropDbos.size} crops.")
+    }
+
+    private suspend fun addCropDetailData(cropDbo: CropDbo) {
+        try {
+
+            val cropDetailResponse = RestClient.getGrowstuffClient().getCrop(cropDbo.externalId)
+            if (cropDetailResponse.isSuccessful) {
+                val cropDetailDto = cropDetailResponse.body()
+                if (cropDetailDto != null) {
+                    // field openfarm_data can be boolean = false if no openfarm data is available^^ wtf
+                    if (cropDetailDto.openfarm_data is LinkedTreeMap<*, *>) {
+                        val attributes =
+                            cropDetailDto.openfarm_data["attributes"] as LinkedTreeMap<*, *>
+                        cropDbo.height = attributes["height"] as Double?;
+                        cropDbo.spread = attributes["spread"] as Double?;
+                    }
+                    cropDbo.medianDaysForFirstHarvest = cropDetailDto.median_days_to_first_harvest
+                }
+            }
+        } catch (ex: Exception) {
+            Log.e("Crop Sync", "Error while loading crop detail data for crop ${cropDbo.name}", ex)
         }
     }
 }
