@@ -1,15 +1,16 @@
 package ch.ost.gartenzwergli.ui.home
 
+import android.graphics.BitmapFactory
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import ch.ost.gartenzwergli.R
 import ch.ost.gartenzwergli.databinding.CropEventItemBinding
+import ch.ost.gartenzwergli.model.dbo.cropevent.CropEventAndCrop
 
 class CropEventsRecyclerViewAdapter(
-    private val values: List<CropEvent>
+    var values: MutableList<CropEventAndCrop>
 ) : RecyclerView.Adapter<CropEventsRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -24,11 +25,17 @@ class CropEventsRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = values[position]
-        holder.textViewEvent.text = item.title
-        holder.textViewCropName.text = item.cropName
-        holder.textViewEventTime.text = item.time
+        holder.textViewEvent.text = item.cropEvent.title
+        holder.textViewCropName.text = item.crop?.name
+        holder.textViewEventTime.text = item.cropEvent.dateTime.toString()
 
-        holder.imageViewEvent.setImageResource(R.drawable.ic_home_black_24dp)
+        if (item.crop?.thumnailPath != null) {
+            val imgFile = item.crop.thumnailPath
+            if (imgFile != null) {
+                val bmp = BitmapFactory.decodeFile(imgFile);
+                holder.imageViewEvent.setImageBitmap(bmp)
+            }
+        }
     }
 
     override fun getItemCount(): Int = values.size

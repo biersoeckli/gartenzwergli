@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import ch.ost.gartenzwergli.model.dbo.CropDbo
 import ch.ost.gartenzwergli.model.dbo.ParameterDbo
+import ch.ost.gartenzwergli.model.dbo.cropevent.CropEventDbo
 import ch.ost.gartenzwergli.model.dto.growstuff.GrowstuffCropDto
 import ch.ost.gartenzwergli.services.interfaces.AppDatabase
 import ch.ost.gartenzwergli.utils.CropDboUtils
@@ -155,6 +156,10 @@ class DataStorage() {
         }
     }
 
+    suspend fun insertCropEvent(cropEvent: CropEventDbo) {
+        withContext(Dispatchers.IO) {
+            db.cropEventDao().insertAll(cropEvent)
+    
     suspend fun syncDetailCropDboIfNeeded(cropDboId: String) {
         val crop = db.cropDao().findById(cropDboId)
         if (crop.detailsFetched) {
