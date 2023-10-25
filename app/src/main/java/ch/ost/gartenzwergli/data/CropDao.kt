@@ -12,6 +12,9 @@ interface CropDao {
     @Query("SELECT * FROM crop")
     fun getAll(): List<CropDbo>
 
+    @Query("SELECT * FROM crop where detailsFetched = false")
+    fun getAllWithoutDetailData(): List<CropDbo>
+
     @Query("SELECT * FROM crop WHERE id IN (:cropIds)")
     fun loadAllByIds(cropIds: IntArray): List<CropDbo>
 

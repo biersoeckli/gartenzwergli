@@ -40,7 +40,6 @@ class DataStorage() {
         if (lastUpdate == null) {
             syncAllCrops()
             syncImagesForCrops(ctx)
-            syncAllDetailCropDataWithApi() // takes a long time^^
             db.parameterDao().insertAll(
                 ParameterDbo(
                     lastUpdateParamKey,
@@ -48,7 +47,7 @@ class DataStorage() {
                 )
             )
         }
-
+        syncDetailDataFromNewCropDbos() // takes a long time^^
     }
 
     private suspend fun syncImagesForCrops(ctx: Context) {
@@ -157,21 +156,25 @@ class DataStorage() {
     }
 
 
-    suspend fun syncDetailCropDboByCropId(cropDboId: String) {
+    suspend fun syncDetailCropDboIfNeeded(cropDboId: String) {
         val crop = db.cropDao().findById(cropDboId)
+        if (crop.detailsFetched) {
+            return
+        }
         addCropDetailData(crop)
         db.cropDao().updateAll(crop)
     }
 
-    suspend fun syncAllDetailCropDataWithApi() {
+    suspend fun syncDetailDataFromNewCropDbos() {
         Log.d("Crop Sync", "Loading detail data for all crops...")
-        val allCropDbos = db.cropDao().getAll()
+        val allCropDbos = db.cropDao().getAllWithoutDetailData()
         var index = 0;
         allCropDbos.forEach { cropDbo ->
             if (index % 30 == 0 || index == allCropDbos.size) {
                 Log.d("Crop Sync", "Loading detail data for crop ($index/${allCropDbos.size})")
             }
             addCropDetailData(cropDbo)
+            db.cropDao().updateAll(cropDbo)
             index++
         }
         Log.d("Crop Sync", "Successfully loaded detail data for ${allCropDbos.size} crops.")
@@ -192,6 +195,7 @@ class DataStorage() {
                         cropDbo.spread = attributes["spread"] as Double?;
                     }
                     cropDbo.medianDaysForFirstHarvest = cropDetailDto.median_days_to_first_harvest
+                    cropDbo.detailsFetched = true
                 }
             }
         } catch (ex: Exception) {

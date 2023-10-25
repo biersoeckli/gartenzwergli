@@ -20,4 +20,5 @@ data class CropDbo(
     var height: Double?,
     var spread: Double?,
     var medianDaysForFirstHarvest: Int?,
+    var detailsFetched: Boolean = false
 )
