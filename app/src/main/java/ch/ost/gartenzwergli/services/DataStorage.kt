@@ -23,6 +23,8 @@ import java.util.concurrent.TimeUnit
 
 class DataStorage() {
 
+    private val lastUpdateParamKey = "lastUpdate"
+
     private var okHttpClient: OkHttpClient
     private var db: AppDatabase = DatabaseService.getDb()
 
@@ -34,11 +36,14 @@ class DataStorage() {
         this.okHttpClient = okHttpBuilder.build()
     }
 
+    suspend fun isInitialRunNecessary(): Boolean {
+        val lastUpdate = db.parameterDao().findByKey(lastUpdateParamKey)
+        return lastUpdate == null;
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun runInitial(ctx: Context) {
-        val lastUpdateParamKey = "lastUpdate"
-        val lastUpdate = db.parameterDao().findByKey(lastUpdateParamKey)
-        if (lastUpdate == null) {
+        if (isInitialRunNecessary()) {
             syncAllCrops()
             syncImagesForCrops(ctx)
             db.parameterDao().insertAll(
@@ -48,7 +53,6 @@ class DataStorage() {
                 )
             )
         }
-        syncDetailDataFromNewCropDbos() // takes a long time^^
     }
 
     private suspend fun syncImagesForCrops(ctx: Context) {

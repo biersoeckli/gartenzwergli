@@ -16,6 +16,9 @@
         android:theme="@style/Theme.Gartenzwergli"
         tools:targetApi="31">
         <activity
+            android:name=".InitialDataLoaderActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.cropDetail.CropDetailActivity"
             android:exported="false" />
         <activity

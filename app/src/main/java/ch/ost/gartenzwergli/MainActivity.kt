@@ -1,6 +1,7 @@
 package ch.ost.gartenzwergli
 
 import android.Manifest
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.annotation.RequiresApi
@@ -29,7 +30,14 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         // !!! START | THIS HAS TO BE EXECUTED AT APPLICATION START | START !!!
         DatabaseService.setupDbWithContext(application.applicationContext)
         launch {
-            DataStorage().runInitial(applicationContext)
+            val dataStorage = DataStorage()
+            if (dataStorage.isInitialRunNecessary()) {
+                Intent(this@MainActivity, InitialDataLoaderActivity::class.java).also {
+                    startActivity(it)
+                }
+            } else {
+                dataStorage.syncDetailDataFromNewCropDbos()
+            }
         }
         // !!! END | THIS HAS TO BE EXECUTED AT APPLICATION START | END !!!
 
