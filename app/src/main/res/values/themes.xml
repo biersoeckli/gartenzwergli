@@ -37,6 +37,8 @@
         <item name="toolbarStyle">@style/Widget.Material3.Toolbar</item>
     </style>
 
+    <style name="Theme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.ActionBar" />
+
     <style name="Theme.FullScreenDialog" parent="Theme.Gartenzwergli">
         <item name="android:windowIsFloating">false</item>
         <item name="android:statusBarColor">?attr/colorPrimary</item>

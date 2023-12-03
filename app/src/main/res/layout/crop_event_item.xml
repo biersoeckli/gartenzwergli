@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/md_theme_dark_inverseSurface">
+    android:background="@color/cardview_light_background">
 
     <ImageView
         android:id="@+id/imageViewEvent"

@@ -23,7 +23,7 @@ abstract class SwipeToDeleteCallback(
     private val mBackground: ColorDrawable = ColorDrawable()
     private val backgroundColor = Color.parseColor("#b80f0a")
     private val deleteDrawable =
-        context?.let { AppCompatResources.getDrawable(it, R.drawable.ic_home_black_24dp) }
+        context?.let { AppCompatResources.getDrawable(it, R.drawable.ic_delete_outline_white_24dp) }
     private val intrinsicWidth = deleteDrawable?.intrinsicWidth
     private val intrinsicHeight = deleteDrawable?.intrinsicHeight
 

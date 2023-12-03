@@ -9,7 +9,7 @@
         android:id="@+id/navigation_crops"
         android:name="ch.ost.gartenzwergli.ui.crops.CropsFragment"
         android:label="@string/title_crops"
-        tools:layout="@layout/fragment_dashboard" />
+        tools:layout="@layout/fragment_crops" />
 
     <fragment
         android:id="@+id/navigation_home"

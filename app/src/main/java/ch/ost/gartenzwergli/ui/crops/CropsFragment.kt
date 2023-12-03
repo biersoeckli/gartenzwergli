@@ -11,10 +11,12 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.lifecycle.Lifecycle
 import ch.ost.gartenzwergli.R
+import ch.ost.gartenzwergli.databinding.FragmentCropsBinding
 import ch.ost.gartenzwergli.services.DatabaseService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,6 +30,9 @@ class CropsFragment : Fragment(), CoroutineScope {
 
     private var columnCount = 1
 
+    private var _binding: FragmentCropsBinding? = null
+    private val binding get() = _binding!!
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -39,6 +44,9 @@ class CropsFragment : Fragment(), CoroutineScope {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        _binding = FragmentCropsBinding.inflate(inflater, container, false)
+        val root: View = binding.root
+
         val view = inflater.inflate(R.layout.crop_item_list, container, false)
 
         // Set the adapter

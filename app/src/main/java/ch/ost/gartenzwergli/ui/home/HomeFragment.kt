@@ -3,17 +3,13 @@ package ch.ost.gartenzwergli.ui.home
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.core.view.MenuHost
-import androidx.core.view.MenuProvider
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -34,6 +30,8 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
+import java.time.format.TextStyle
+import java.util.Locale
 import kotlin.coroutines.CoroutineContext
 
 class HomeFragment() : Fragment(), CoroutineScope {
@@ -74,7 +72,7 @@ class HomeFragment() : Fragment(), CoroutineScope {
         savedInstanceState: Bundle?
     ): View {
         super.onCreateView(inflater, container, savedInstanceState)
-        setupAppBarMenu()
+        (activity as AppCompatActivity).supportActionBar?.hide()
 
         val homeViewModel =
             ViewModelProvider(this).get(HomeViewModel::class.java)
@@ -130,21 +128,96 @@ class HomeFragment() : Fragment(), CoroutineScope {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.calendarViewCropCalendar.monthScrollListener = {
-            selectDate(it.yearMonth.atDay(1))
-        }
-
         val daysOfWeek = daysOfWeek()
+
+        binding.legendLayout.root.children
+            .map { it as TextView }
+            .forEachIndexed { index, textView ->
+                textView.text =
+                    daysOfWeek[index].getDisplayName(TextStyle.SHORT, Locale.getDefault())
+                textView.setTextColor(Color.WHITE)
+            }
+
         val currentMonth = YearMonth.now()
         val startMonth = currentMonth.minusMonths(200)
         val endMonth = currentMonth.plusMonths(200)
 
-        configureBinders(daysOfWeek)
+        setupMonthCalendar(startMonth, endMonth, currentMonth, daysOfWeek.first())
+    }
 
-        binding.calendarViewCropCalendar.apply {
-            setup(startMonth, endMonth, daysOfWeek.first())
-            scrollToMonth(currentMonth)
+    private fun setupMonthCalendar(
+        startMonth: YearMonth,
+        endMonth: YearMonth,
+        currentMonth: YearMonth,
+        firstDayOfWeek: DayOfWeek
+    ) {
+        class DayViewContainer(view: View) : ViewContainer(view) {
+            lateinit var day: CalendarDay
+            val textView = CalendarDayBinding.bind(view).dayText
+            val dotView = CalendarDayBinding.bind(view).dayDotView
+
+            init {
+                view.setOnClickListener {
+                    if (day.position == DayPosition.MonthDate) {
+                        selectDate(day.date)
+                    }
+                }
+            }
         }
+
+        binding.calendarViewCropCalendar.dayBinder = object : MonthDayBinder<DayViewContainer> {
+            override fun create(view: View) = DayViewContainer(view)
+
+            override fun bind(container: DayViewContainer, data: CalendarDay) {
+                container.day = data
+                val textView = container.textView
+                val dotView = container.dotView
+
+                textView.text = data.date.dayOfMonth.toString()
+
+                if (data.position == DayPosition.MonthDate) {
+                    textView.visibility = View.VISIBLE
+
+                    when (data.date) {
+                        today -> {
+                            textView.setTextColor(Color.WHITE)
+                            textView.setBackgroundResource(androidx.appcompat.R.color.material_blue_grey_800)
+                            dotView.visibility = View.VISIBLE
+                        }
+
+                        selectedDate -> {
+                            textView.setTextColor(Color.BLUE)
+                            textView.setBackgroundColor(Color.LTGRAY)
+                            dotView.visibility = View.INVISIBLE
+                        }
+
+                        else -> {
+                            textView.setTextColor(Color.BLACK)
+                            textView.background = null
+
+                            // set visible if data is available for the day
+                            dotView.isVisible = false
+                        }
+                    }
+                } else {
+                    textView.setTextColor(Color.GRAY)
+                    dotView.visibility = View.INVISIBLE
+                }
+            }
+        }
+
+        binding.calendarViewCropCalendar.monthScrollListener = {
+            updateTitle()
+        }
+        binding.calendarViewCropCalendar.setup(startMonth, endMonth, firstDayOfWeek)
+        binding.calendarViewCropCalendar.scrollToMonth(currentMonth)
+    }
+
+    private fun updateTitle() {
+        val month = binding.calendarViewCropCalendar.findFirstVisibleMonth()?.yearMonth ?: return
+        binding.exOneYearText.text = month.year.toString()
+        binding.exOneMonthText.text =
+            month.month.getDisplayName(TextStyle.FULL, Locale.getDefault())
     }
 
     private fun selectDate(date: LocalDate) {
@@ -177,80 +250,6 @@ class HomeFragment() : Fragment(), CoroutineScope {
             this?.notifyDataSetChanged()
         }
         binding.selectedDateText.text = selectionFormatter.format(date)
-    }
-
-    private fun configureBinders(daysOfWeek: List<DayOfWeek>) {
-        class DayViewContainer(view: View) : ViewContainer(view) {
-            lateinit var day: CalendarDay
-            val binding = CalendarDayBinding.bind(view)
-
-            init {
-                view.setOnClickListener {
-                    if (day.position == DayPosition.MonthDate) {
-                        selectDate(day.date)
-                    }
-                }
-            }
-        }
-
-        binding.calendarViewCropCalendar.dayBinder = object : MonthDayBinder<DayViewContainer> {
-            override fun create(view: View) = DayViewContainer(view)
-
-            override fun bind(container: DayViewContainer, data: CalendarDay) {
-                container.day = data
-                val textView = container.binding.dayText
-                val dotView = container.binding.dayDotView
-
-                textView.text = data.date.dayOfMonth.toString()
-
-                if (data.position == DayPosition.MonthDate) {
-                    textView.visibility = View.VISIBLE
-                    when (data.date) {
-                        today -> {
-                            textView.setTextColor(Color.WHITE)
-                            textView.setBackgroundResource(R.drawable.ic_today_white_24dp)
-                            dotView.visibility = View.INVISIBLE
-                        }
-
-                        selectedDate -> {
-                            textView.setTextColor(Color.BLUE)
-                            textView.setBackgroundColor(Color.LTGRAY)
-                            dotView.visibility = View.INVISIBLE
-                        }
-
-                        else -> {
-                            textView.setTextColor(Color.BLACK)
-                            textView.background = null
-
-                            // set visible if data is available for the day
-                            dotView.isVisible = true
-                        }
-                    }
-                } else {
-                    textView.visibility = View.INVISIBLE
-                    dotView.visibility = View.INVISIBLE
-                }
-            }
-        }
-    }
-
-    private fun setupAppBarMenu() {
-        (requireActivity() as MenuHost).addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.home_app_bar_menu, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                when (menuItem.itemId) {
-                    R.id.app_bar_today -> {
-                        Toast.makeText(context, "Set Calendar to today", Toast.LENGTH_SHORT).show()
-                        return true
-                    }
-                }
-                return true
-            }
-
-        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
     override fun onDestroyView() {
