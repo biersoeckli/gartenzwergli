@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import ch.ost.gartenzwergli.ui.cropDetail.CropDetailActivity
+import ch.ost.gartenzwergli.ui.crops.cropDetail.CropDetailActivity
 import ch.ost.gartenzwergli.databinding.CropItemBinding
 import ch.ost.gartenzwergli.model.dbo.CropDbo
 import java.io.File

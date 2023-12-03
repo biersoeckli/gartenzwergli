@@ -1,15 +1,19 @@
-package ch.ost.gartenzwergli.ui.cropDetail
+package ch.ost.gartenzwergli.ui.crops.cropDetail
 
+import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import ch.ost.gartenzwergli.InitialDataLoaderActivity
 import ch.ost.gartenzwergli.R
 import ch.ost.gartenzwergli.model.dbo.CropDbo
 import ch.ost.gartenzwergli.services.DataStorage
 import ch.ost.gartenzwergli.services.DatabaseService
+import ch.ost.gartenzwergli.ui.crops.addCropToBed.AddCropToBedActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,6 +35,7 @@ class CropDetailActivity() : AppCompatActivity(), CoroutineScope {
 
         val actionBar = getSupportActionBar()
         if (actionBar != null) {
+            actionBar.title = "Crop"
             actionBar.setDisplayHomeAsUpEnabled(true)
         }
 
@@ -52,16 +57,17 @@ class CropDetailActivity() : AppCompatActivity(), CoroutineScope {
                 }
             }
         }
+
+        findViewById<Button>(R.id.addCropToBedButton).setOnClickListener {
+            val intent = Intent(this@CropDetailActivity, AddCropToBedActivity::class.java)
+            intent.putExtra(AddCropToBedActivity.EXTRA_CROP_DBO_ID, cropDboId)
+            this@CropDetailActivity.startActivity(intent)
+        }
     }
 
-    override fun onContextItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            android.R.id.home -> {
-                finish()
-                return true
-            }
-        }
-        return super.onContextItemSelected(item)
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 
     override val coroutineContext: CoroutineContext

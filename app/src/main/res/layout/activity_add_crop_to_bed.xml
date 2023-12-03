@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.crops.cropDetail.CropDetailActivity">
+    tools:context=".ui.crops.addCropToBed.AddCropToBedActivity">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -19,45 +19,41 @@
             android:id="@+id/linearLayout2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <ImageView
-                android:id="@+id/cropImageView"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:scaleType="centerCrop" />
+            android:orientation="vertical"
+            android:padding="20dp">
 
             <TextView
                 android:id="@+id/cropTitleTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingStart="15dp"
-                android:paddingTop="15dp"
-                android:paddingEnd="15dp"
+                android:paddingBottom="15dp"
                 android:text="CropTitle"
                 android:textSize="34sp"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/cropDescriptionTextView"
+                android:id="@+id/textView3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingStart="15dp"
-                android:paddingTop="15dp"
-                android:paddingEnd="15dp"
-                android:text="TextView" />
+                android:text="Choose a start date:" />
+
+            <DatePicker
+                android:id="@+id/datePicker1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:calendarViewShown="false"
+                android:datePickerMode="spinner" />
 
         </LinearLayout>
     </ScrollView>
 
     <Button
-        android:id="@+id/addCropToBedButton"
+        android:id="@+id/saveCropEventButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:text="Add to Gärtli"
+        android:text="Save"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>
