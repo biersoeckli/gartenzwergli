@@ -12,8 +12,8 @@
         android:title="@string/title_home" />
 
     <item
-        android:id="@+id/navigation_beds"
+        android:id="@+id/navigation_garden"
         android:icon="@drawable/ic_outdoor_garden_24dp"
-        android:title="@string/title_beds" />
+        android:title="@string/title_garden" />
 
 </menu>

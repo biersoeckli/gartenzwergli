@@ -21,6 +21,9 @@ interface CropDao {
     @Query("SELECT * FROM crop WHERE id = :cropId")
     fun findById(cropId: String): CropDbo
 
+    @Query("SELECT * FROM crop WHERE name LIKE :name")
+    fun findByName(name: String): List<CropDbo>
+
     @Insert
     fun insertAll(vararg users: CropDbo)
 

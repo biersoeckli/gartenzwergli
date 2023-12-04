@@ -38,9 +38,10 @@ class HomeFragment() : Fragment(), CoroutineScope {
 
     private var _binding: FragmentHomeBinding? = null
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
+
+    private lateinit var homeViewModel: HomeViewModel
+
     private var cropEventsAdapter: CropEventsRecyclerViewAdapter? = null
 
     private var selectedDate: LocalDate? = null
@@ -105,6 +106,9 @@ class HomeFragment() : Fragment(), CoroutineScope {
                     "Item was removed from the list.",
                     Snackbar.LENGTH_LONG
                 )
+
+                updateEmptyView(recyclerViewCropEvents, binding.root)
+
                 snackbar.setAction("UNDO") {
                     if (cropEvent != null) {
                         cropEventsAdapter?.values?.add(position, cropEvent)
@@ -117,6 +121,9 @@ class HomeFragment() : Fragment(), CoroutineScope {
                 snackbar.show()
             }
         }
+
+        val selectedDateText: TextView = binding.selectedDateText
+        selectedDateText.text = selectionFormatter.format(today)
 
         // recycler view swipe right to show delete button
         val itemTouchHelper = ItemTouchHelper(swipeController)
@@ -143,6 +150,18 @@ class HomeFragment() : Fragment(), CoroutineScope {
         val endMonth = currentMonth.plusMonths(200)
 
         setupMonthCalendar(startMonth, endMonth, currentMonth, daysOfWeek.first())
+        updateEmptyView(binding.calendarEventsRecyclerView, binding.root)
+    }
+
+    private fun updateEmptyView(recyclerView: RecyclerView, view: View) {
+        val emptyView: TextView = view.findViewById(R.id.emptyEventsViewText)
+        if (recyclerView.adapter?.itemCount == 0) {
+            emptyView.visibility = View.VISIBLE
+            recyclerView.visibility = View.GONE
+        } else {
+            emptyView.visibility = View.GONE
+            recyclerView.visibility = View.VISIBLE
+        }
     }
 
     private fun setupMonthCalendar(
@@ -249,6 +268,7 @@ class HomeFragment() : Fragment(), CoroutineScope {
             this?.values = cropEvents
             this?.notifyDataSetChanged()
         }
+
         binding.selectedDateText.text = selectionFormatter.format(date)
     }
 

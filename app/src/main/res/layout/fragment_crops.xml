@@ -1,25 +1,55 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.crops.CropsFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    <!-- NestedScrollingChild goes here (NestedScrollView, RecyclerView, etc.). -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/baseCropsListRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layoutManager="LinearLayoutManager"
+        tools:listitem="@layout/crop_item"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
+    <!--
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/searchbar_scrolling_view_behavior">
+
+    </androidx.core.widget.NestedScrollview> -->
 
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/cropsAppBarLayout"
+        android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:background="@color/md_theme_light_primary">
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:background="@color/md_theme_light_primary"
-            android:id="@+id/cropsAppBar"
+        <com.google.android.material.search.SearchBar
+            android:id="@+id/cropsSearchBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="?attr/actionBarSize"
-            app:title="@string/title_crops"
-            app:menu="@menu/crops_app_bar_menu" />
+            android:hint="@string/search_crops_hint" />
 
     </com.google.android.material.appbar.AppBarLayout>
+
+    <com.google.android.material.search.SearchView
+        android:id="@+id/searchCropsView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:hint="@string/search_crops_hint"
+        app:layout_anchor="@id/cropsSearchBar">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/cropsListRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layoutManager="LinearLayoutManager"
+            tools:listitem="@layout/crop_item" />
+
+    </com.google.android.material.search.SearchView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

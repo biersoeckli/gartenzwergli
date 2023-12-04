@@ -1,6 +1,10 @@
 package ch.ost.gartenzwergli.ui.crops
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.KeyEvent
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -11,13 +15,15 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.lifecycle.Lifecycle
 import ch.ost.gartenzwergli.R
 import ch.ost.gartenzwergli.databinding.FragmentCropsBinding
 import ch.ost.gartenzwergli.services.DatabaseService
+import com.google.android.material.internal.TextWatcherAdapter
+import com.google.android.material.search.SearchBar
+import com.google.android.material.search.SearchView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -40,31 +46,48 @@ class CropsFragment : Fragment(), CoroutineScope {
         }
     }
 
+    @SuppressLint("RestrictedApi")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentCropsBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val view = inflater.inflate(R.layout.crop_item_list, container, false)
+        val cropsRecyclerView: RecyclerView = binding.cropsListRecyclerView
+        val baseCropsRecyclerView: RecyclerView = binding.baseCropsListRecyclerView
 
-        // Set the adapter
-        if (view is RecyclerView) {
-            with(view) {
-                layoutManager = when {
-                    columnCount <= 1 -> LinearLayoutManager(context)
-                    else -> GridLayoutManager(context, columnCount)
-                }
+        val cropsSearchBar: SearchBar = binding.cropsSearchBar
+        val cropsSearchView: SearchView = binding.searchCropsView
 
-                launch {
-                   val cropDbos = DatabaseService.getDb().cropDao().getAll()
-                    adapter = CropsRecyclerViewAdapter(cropDbos, view.context)
-                }
+        cropsSearchView.setupWithSearchBar(cropsSearchBar)
 
+        with(baseCropsRecyclerView) {
+            layoutManager = when {
+                columnCount <= 1 -> LinearLayoutManager(context)
+                else -> GridLayoutManager(context, columnCount)
+            }
+
+            launch {
+                val cropDbos = DatabaseService.getDb().cropDao().getAll()
+                adapter = CropsRecyclerViewAdapter(cropDbos, baseCropsRecyclerView.context)
             }
         }
-        return view
+
+        cropsSearchView.editText.addTextChangedListener(object : TextWatcherAdapter() {
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                val searchQuery = cropsSearchView.text.toString()
+
+                launch {
+                    val cropDbos = DatabaseService.getDb().cropDao().findByName("%$searchQuery%")
+
+                    // change data in adapter
+                    cropsRecyclerView.adapter = CropsRecyclerViewAdapter(cropDbos, cropsRecyclerView.context)
+                }
+            }
+        })
+
+        return root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

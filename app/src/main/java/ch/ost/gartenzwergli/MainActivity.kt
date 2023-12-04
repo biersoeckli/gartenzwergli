@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.navigation_crops, R.id.navigation_home, R.id.navigation_beds
+                R.id.navigation_crops, R.id.navigation_home, R.id.navigation_garden
             )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)

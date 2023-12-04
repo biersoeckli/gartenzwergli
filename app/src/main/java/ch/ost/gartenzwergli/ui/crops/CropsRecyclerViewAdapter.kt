@@ -12,6 +12,7 @@ import ch.ost.gartenzwergli.ui.crops.cropDetail.CropDetailActivity
 import ch.ost.gartenzwergli.databinding.CropItemBinding
 import ch.ost.gartenzwergli.model.dbo.CropDbo
 import java.io.File
+import java.util.Locale
 
 
 class CropsRecyclerViewAdapter(
@@ -33,7 +34,9 @@ class CropsRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = values[position]
-        holder.plantNameTextView.text = item.name
+        // set text to title case
+        holder.plantNameTextView.text = item.name.titlecase()
+        holder.scientificNameTextView.text = item.scientificName?.titlecase()
 
         if (item.thumnailPath != null) {
             val imgFile = File(item.thumnailPath!!);
@@ -55,6 +58,7 @@ class CropsRecyclerViewAdapter(
     inner class ViewHolder(binding: CropItemBinding) : RecyclerView.ViewHolder(binding.root) {
         val thumbnailImageView: ImageView = binding.thumbnailmageView
         val plantNameTextView: TextView = binding.plantName
+        val scientificNameTextView: TextView = binding.plantScientificName
 
         init {
 
@@ -67,3 +71,11 @@ class CropsRecyclerViewAdapter(
     }
 
 }
+
+fun String.titlecase(): String =
+    this.replaceFirstChar { // it: Char
+        if (it.isLowerCase())
+            it.titlecase(Locale.getDefault())
+        else
+            it.toString()
+    }

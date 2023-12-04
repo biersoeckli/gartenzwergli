@@ -123,6 +123,23 @@
                 android:layout_height="match_parent"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
+            <TextView
+                android:id="@+id/emptyEventsViewText"
+                android:layout_margin="40dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="@string/empty_events_view_text"
+                android:textSize="16sp"
+                android:visibility="gone"
+                app:drawableTint="?attr/colorAccent"
+                app:drawableTopCompat="@drawable/round_event_busy_24dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
         </LinearLayout>
 
 
