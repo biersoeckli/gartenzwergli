@@ -12,4 +12,5 @@
     <string name="search_crops_hint">Search Crops</string>
     <string name="empty_view_text">Your garden is empty</string>
     <string name="empty_events_view_text">No events found</string>
+    <string name="select_date">Select Date</string>
 </resources>

@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
@@ -43,7 +42,10 @@
             android:id="@+id/newEventDateSelctor"
             android:layout_width="match_parent"
             android:layout_height="80dp"
-            android:padding="24dp">
+            android:paddingLeft="24dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="24dp"
+            android:paddingBottom="16dp">
 
             <ImageView
                 android:id="@+id/newEventCalendarIcon"
@@ -55,13 +57,17 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_calendar_month_black_24dp" />
 
-            <TextView
+            <EditText
                 android:id="@+id/newEventCalendarText"
-                android:layout_height="match_parent"
+
+                android:hint="@string/select_date"
+                android:focusable="false"
+                android:inputType="none"
+                android:clickable="true"
+
                 android:layout_width="0dp"
+                android:layout_height="match_parent"
                 android:layout_marginStart="16dp"
-                android:gravity="center_vertical"
-                android:text="Switch"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/newEventCalendarIcon"
@@ -78,21 +84,31 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="wrap_content"
             android:paddingLeft="24dp"
             android:paddingTop="16dp"
             android:paddingEnd="24dp"
             android:paddingBottom="16dp">
 
-            <ImageView
-                android:id="@+id/newEventPlantIcon"
-                android:layout_width="24dp"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layout_newEventPlantIcon"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="16dp"
                 app:layout_constraintEnd_toStartOf="@+id/newEventPlantText"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_psychiatry_24dp" />
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/newEventPlantIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_psychiatry_24dp" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <EditText
                 android:id="@+id/newEventPlantText"
@@ -102,8 +118,20 @@
                 android:hint="Plant"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/newEventPlantIcon"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintStart_toEndOf="@+id/layout_newEventPlantIcon"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <Spinner
+                android:id="@+id/spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="56dp"
+                android:layout_marginTop="24dp"
+                android:tooltipText="Select event type"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/layout_newEventPlantIcon"
+                app:layout_constraintTop_toBottomOf="@+id/newEventPlantText" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -130,6 +158,7 @@
                     android:id="@+id/newEventBellIcon"
                     android:layout_width="24dp"
                     android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/ic_notifications_black_24dp" />
             </androidx.constraintlayout.widget.ConstraintLayout>
