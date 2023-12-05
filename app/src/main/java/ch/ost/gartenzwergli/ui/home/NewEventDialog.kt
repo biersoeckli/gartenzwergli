@@ -12,6 +12,8 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.DialogFragment
 import ch.ost.gartenzwergli.R
 import ch.ost.gartenzwergli.databinding.FragmentNewEventDialogBinding
+import ch.ost.gartenzwergli.model.dbo.cropevent.CropEventDbo
+import ch.ost.gartenzwergli.services.DatabaseService
 import java.util.Calendar
 
 /**
@@ -71,6 +73,17 @@ class NewEventDialog : DialogFragment() {
         toolbar?.setOnMenuItemClickListener(Toolbar.OnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.action_new_event -> {
+
+                    /*
+                    DatabaseService.getDb().cropEventDao().insertAll(
+                        CropEventDbo(
+                            title = binding.newEventPlantText.text.toString(),
+                            description = "",
+                            dateTime = binding.newEventCalendarText.text.toString(),
+                            cropId = "1" // todo ein dummy crop muss erstellt werden
+                        )
+                    )*/
+
                     dismiss()
                     return@OnMenuItemClickListener true
                 }

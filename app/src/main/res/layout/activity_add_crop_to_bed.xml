@@ -38,7 +38,7 @@
                 android:text="Choose a start date:" />
 
             <DatePicker
-                android:id="@+id/datePicker1"
+                android:id="@+id/cropDatePicker"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:calendarViewShown="false"
