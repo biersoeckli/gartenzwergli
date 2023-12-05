@@ -62,6 +62,24 @@ class HomeFragment() : Fragment(), CoroutineScope {
         return crops.toMutableList()
     }
 
+    fun refreshCropsOnUi(date: LocalDate? = null) {
+        val cropEvents: MutableList<CropEventAndCrop>?;
+        if (date != null) {
+            this.selectedDate = date
+        }
+        if (selectedDate != null) {
+            cropEvents = getCropsByDay(selectedDate!!)
+        } else {
+            cropEvents = getCropsByDay(today)
+        }
+        cropEventsAdapter.apply {
+            this?.values?.clear()
+            this?.values?.addAll(cropEvents!!)
+            this?.notifyDataSetChanged()
+            updateEmptyView(binding.calendarEventsRecyclerView, binding.root)
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -79,7 +97,12 @@ class HomeFragment() : Fragment(), CoroutineScope {
         val floatingActionButtonNewCropEvent: FloatingActionButton =
             binding.floatingActionButtonNewCropEvent
         floatingActionButtonNewCropEvent.setOnClickListener {
-            NewEventDialog().show(
+            val dialogFragment = NewEventDialog()
+
+            dialogFragment.onSuccessfullySavedAction.observe(viewLifecycleOwner) {
+                refreshCropsOnUi()
+            }
+            dialogFragment.show(
                 childFragmentManager, null
             )
         }
@@ -89,18 +112,7 @@ class HomeFragment() : Fragment(), CoroutineScope {
 
 
         // rerender the crops every time when the fragment is loaded
-        val cropEvents: MutableList<CropEventAndCrop>?;
-        if (selectedDate != null) {
-            cropEvents = getCropsByDay(selectedDate!!)
-        } else {
-            cropEvents = getCropsByDay(today)
-        }
-        cropEventsAdapter.apply {
-            this?.values?.clear()
-            this?.values?.addAll(cropEvents!!)
-            this?.notifyDataSetChanged()
-            updateEmptyView(binding.calendarEventsRecyclerView, binding.root)
-        }
+        refreshCropsOnUi()
 
 
         val swipeController = object : SwipeToDeleteCallback(context) {
@@ -261,20 +273,9 @@ class HomeFragment() : Fragment(), CoroutineScope {
 
             oldDate?.let { binding.calendarViewCropCalendar.notifyDateChanged(it) }
             binding.calendarViewCropCalendar.notifyDateChanged(date)
-            updateAdapterForDate(date)
+            refreshCropsOnUi(date)
+            binding.selectedDateText.text = selectionFormatter.format(date)
         }
-    }
-
-    private fun updateAdapterForDate(date: LocalDate) {
-        val cropEvents = getCropsByDay(date)
-        cropEventsAdapter.apply {
-            this?.values?.clear()
-            this?.values?.addAll(cropEvents)
-            this?.notifyDataSetChanged()
-            updateEmptyView(binding.calendarEventsRecyclerView, binding.root)
-        }
-
-        binding.selectedDateText.text = selectionFormatter.format(date)
     }
 
     override fun onDestroyView() {

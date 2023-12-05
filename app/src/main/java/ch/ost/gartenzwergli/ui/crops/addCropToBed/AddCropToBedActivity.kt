@@ -59,7 +59,7 @@ class AddCropToBedActivity : AppCompatActivity(), CoroutineScope {
                 DatabaseService.getDb().cropEventDao().insertAll(
                     CropEventDbo(
                         title = cropDbo.name,
-                        description = cropDbo.description,
+                        description = cropDbo.scientificName ?: "",
                         dateTime = dateString,
                         cropId = cropDboId
                     )

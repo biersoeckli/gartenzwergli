@@ -38,6 +38,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
             } else {
                 dataStorage.syncDetailDataFromNewCropDbos()
             }
+            dataStorage.createDummyCropIfNotExists()
         }
         // !!! END | THIS HAS TO BE EXECUTED AT APPLICATION START | END !!!
 

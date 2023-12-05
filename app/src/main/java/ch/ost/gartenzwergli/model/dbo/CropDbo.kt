@@ -5,6 +5,8 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import java.util.UUID
 
+val DUMMY_CROP_ID = "0";
+
 @Entity("crop", indices = [Index(value = ["externalId"], unique = true)])
 data class CropDbo(
     @PrimaryKey var id: String = UUID.randomUUID().toString(),

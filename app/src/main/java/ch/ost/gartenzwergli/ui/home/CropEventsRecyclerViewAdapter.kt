@@ -26,7 +26,7 @@ class CropEventsRecyclerViewAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = values[position]
         holder.textViewEvent.text = item.cropEvent.title
-        holder.textViewCropName.text = item.crop?.name
+        holder.textViewCropName.text = item.cropEvent?.description ?: ""
         holder.textViewEventTime.text = item.cropEvent.dateTime.toString()
 
         if (item.crop?.thumnailPath != null) {
@@ -35,6 +35,8 @@ class CropEventsRecyclerViewAdapter(
                 val bmp = BitmapFactory.decodeFile(imgFile);
                 holder.imageViewEvent.setImageBitmap(bmp)
             }
+        } else {
+            holder.imageViewEvent.visibility = ImageView.GONE
         }
     }
 

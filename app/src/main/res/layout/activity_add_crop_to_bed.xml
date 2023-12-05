@@ -33,9 +33,9 @@
 
             <TextView
                 android:id="@+id/textView3"
+                android:text="Choose a sowing date:"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Choose a start date:" />
+                android:layout_height="wrap_content" />
 
             <DatePicker
                 android:id="@+id/cropDatePicker"
