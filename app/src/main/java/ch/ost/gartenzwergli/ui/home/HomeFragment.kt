@@ -17,6 +17,7 @@ import ch.ost.gartenzwergli.R
 import ch.ost.gartenzwergli.databinding.CalendarDayBinding
 import ch.ost.gartenzwergli.databinding.FragmentHomeBinding
 import ch.ost.gartenzwergli.model.dbo.cropevent.CropEventAndCrop
+import ch.ost.gartenzwergli.services.DatabaseService
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.kizitonwose.calendar.core.CalendarDay
@@ -51,20 +52,14 @@ class HomeFragment() : Fragment(), CoroutineScope {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        cropEventsAdapter = CropEventsRecyclerViewAdapter(mutableListOf()) // ititialize empty list
+    }
 
-        val cropEvents = mutableListOf<CropEventAndCrop>(
-            CropEventAndCrop(
-                cropEvent = ch.ost.gartenzwergli.model.dbo.cropevent.CropEventDbo(
-                    title = "Crop Event 1",
-                    dateTime = "2021-05-01T12:00:00.000+00:00",
-                    cropId = "1",
-                    id = "1",
-                    description = "Description 1"
-                ),
-                crop = null
-            ),
-        )
-        cropEventsAdapter = CropEventsRecyclerViewAdapter(cropEvents);
+    fun getCropsByDay(date: LocalDate): MutableList<CropEventAndCrop> {
+        val now = date.format(DateTimeFormatter.ISO_DATE)
+        val db = DatabaseService.getDb()
+        val crops = db.cropEventDao().getCropEventsAndCropsByDate(now)
+        return crops.toMutableList()
     }
 
     override fun onCreateView(
@@ -92,12 +87,31 @@ class HomeFragment() : Fragment(), CoroutineScope {
         val recyclerViewCropEvents: RecyclerView = binding.calendarEventsRecyclerView
         recyclerViewCropEvents.adapter = cropEventsAdapter
 
+
+        // rerender the crops every time when the fragment is loaded
+        val cropEvents: MutableList<CropEventAndCrop>?;
+        if (selectedDate != null) {
+            cropEvents = getCropsByDay(selectedDate!!)
+        } else {
+            cropEvents = getCropsByDay(today)
+        }
+        cropEventsAdapter.apply {
+            this?.values?.clear()
+            this?.values?.addAll(cropEvents!!)
+            this?.notifyDataSetChanged()
+            updateEmptyView(binding.calendarEventsRecyclerView, binding.root)
+        }
+
+
         val swipeController = object : SwipeToDeleteCallback(context) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
 
                 val position = viewHolder.absoluteAdapterPosition
                 val cropEvent: CropEventAndCrop? = cropEventsAdapter?.values?.get(position);
 
+                if (cropEvent != null) {
+                    DatabaseService.getDb().cropEventDao().delete(cropEvent!!.cropEvent!!)
+                }
                 cropEventsAdapter?.values?.removeAt(position)
                 cropEventsAdapter?.notifyItemRemoved(position)
 
@@ -109,13 +123,14 @@ class HomeFragment() : Fragment(), CoroutineScope {
 
                 updateEmptyView(recyclerViewCropEvents, binding.root)
 
-                snackbar.setAction("UNDO") {
+                // nice to have feature
+                /*snackbar.setAction("UNDO") {
                     if (cropEvent != null) {
                         cropEventsAdapter?.values?.add(position, cropEvent)
                     }
                     cropEventsAdapter?.notifyItemInserted(position)
                     recyclerViewCropEvents.scrollToPosition(position)
-                }
+                }*/
                 snackbar.setActionTextColor(Color.YELLOW)
                 snackbar.anchorView = floatingActionButtonNewCropEvent
                 snackbar.show()
@@ -251,22 +266,12 @@ class HomeFragment() : Fragment(), CoroutineScope {
     }
 
     private fun updateAdapterForDate(date: LocalDate) {
-        val cropEvents = mutableListOf<CropEventAndCrop>(
-            CropEventAndCrop(
-                cropEvent = ch.ost.gartenzwergli.model.dbo.cropevent.CropEventDbo(
-                    title = "Crop Event 1",
-                    dateTime = "2021-05-01T12:00:00.000+00:00",
-                    cropId = "1",
-                    id = "1",
-                    description = "Description 1"
-                ),
-                crop = null
-            ),
-        )
+        val cropEvents = getCropsByDay(date)
         cropEventsAdapter.apply {
             this?.values?.clear()
-            this?.values = cropEvents
+            this?.values?.addAll(cropEvents)
             this?.notifyDataSetChanged()
+            updateEmptyView(binding.calendarEventsRecyclerView, binding.root)
         }
 
         binding.selectedDateText.text = selectionFormatter.format(date)
