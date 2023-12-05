@@ -44,4 +44,13 @@
         <item name="android:statusBarColor">?attr/colorPrimary</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
+
+    <style name="Theme.Gartenzwergli.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.Gartenzwergli.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.Gartenzwergli.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>
