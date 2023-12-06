@@ -20,10 +20,6 @@ class GardenFragment : Fragment() {
 
     private val binding get() = _binding!!
 
-    companion object {
-        private const val TAG = "GardenFragment"
-    }
-
     private lateinit var viewModel: GardenViewModel
 
     override fun onCreateView(
@@ -39,10 +35,8 @@ class GardenFragment : Fragment() {
                 R.id.garden_settings -> {
                     val cameraActivity = Intent(this.context, GardenCameraActivity::class.java)
                     startActivity(cameraActivity)
-
                     true
                 }
-
                 else -> {
                     false
                 }
@@ -91,4 +85,7 @@ class GardenFragment : Fragment() {
         // TODO: Use the ViewModel
     }
 
+    companion object {
+        private const val TAG = "GardenFragment"
+    }
 }

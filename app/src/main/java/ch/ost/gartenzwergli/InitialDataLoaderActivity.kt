@@ -20,7 +20,6 @@ class InitialDataLoaderActivity : AppCompatActivity(), CoroutineScope {
         }
     }
 
-
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main
 }
