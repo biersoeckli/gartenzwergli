@@ -61,8 +61,17 @@ class GardenFragment : Fragment() {
 
         if (gardenBackgroundImage != null) {
             val gardenBackgroundImageUri = Uri.parse(gardenBackgroundImage)
-            val bitmap = this.activity?.let { BitmapUtils().getCapturedImage(it.contentResolver, gardenBackgroundImageUri) }
-            binding.gardenBackgroundImage.setImageBitmap(bitmap)
+            try {
+                val bitmap = this.activity?.let { BitmapUtils().getCapturedImage(it.contentResolver, gardenBackgroundImageUri) }
+                binding.gardenBackgroundImage.setImageBitmap(bitmap)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error while loading garden background image: ${e.message}")
+                // unset background image
+                with (sharedPref.edit()) {
+                    putString(getString(R.string.garden_background_image_key), null)
+                    apply()
+                }
+            }
         }
 
         binding.addPlantFab.setOnClickListener { view ->

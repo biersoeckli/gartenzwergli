@@ -159,7 +159,7 @@ class GardenCameraActivity : AppCompatActivity() {
                 applicationContext.contentResolver.takePersistableUriPermission(uri, flag)
 
                 val intent = Intent(this, MainActivity::class.java)
-                startActivityFromFragment(GardenFragment(), intent, 0)
+                startActivity(intent)
                 finish()
             } else {
                 Log.d("PhotoPicker", "No media selected")
