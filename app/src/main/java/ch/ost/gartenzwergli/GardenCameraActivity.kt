@@ -3,6 +3,7 @@ package ch.ost.gartenzwergli
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.ContentValues
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -19,8 +20,12 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.core.Preview
 import androidx.camera.core.CameraSelector
 import android.util.Log
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.camera.core.ImageCaptureException
+import androidx.fragment.app.Fragment
 import ch.ost.gartenzwergli.databinding.ActivityGardenCameraBinding
+import ch.ost.gartenzwergli.ui.garden.GardenFragment
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -31,9 +36,10 @@ typealias LumaListener = (luma: Double) -> Unit
 class GardenCameraActivity : AppCompatActivity() {
     private lateinit var viewBinding: ActivityGardenCameraBinding
 
-    private var imageCapture: ImageCapture? = null
-
     private lateinit var cameraExecutor: ExecutorService
+    private lateinit var pickMedia: ActivityResultLauncher<PickVisualMediaRequest>
+
+    private var imageCapture: ImageCapture? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +58,10 @@ class GardenCameraActivity : AppCompatActivity() {
             requestPermissions()
         }
 
+        setupPickMedia()
+
         viewBinding.imageCaptureButton.setOnClickListener { takePhoto() }
+        viewBinding.imageChooserButton.setOnClickListener { choosePhoto() }
 
         cameraExecutor = Executors.newSingleThreadExecutor()
     }
@@ -89,10 +98,7 @@ class GardenCameraActivity : AppCompatActivity() {
                 }
 
                 override fun
-                        onImageSaved(output: ImageCapture.OutputFileResults){
-                    /*val msg = "Photo capture succeeded: ${output.savedUri}"
-                    Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
-                    Log.d(TAG, msg)*/
+                        onImageSaved(output: ImageCapture.OutputFileResults) {
 
                     val intent = Intent(this@GardenCameraActivity, GardenCameraPreviewActivity::class.java)
                         intent.putExtra(GardenCameraPreviewActivity.EXTRA_IMAGE_PATH, output.savedUri.toString())
@@ -138,6 +144,32 @@ class GardenCameraActivity : AppCompatActivity() {
         }, ContextCompat.getMainExecutor(this))
     }
 
+    private fun setupPickMedia() {
+        pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            if (uri != null) {
+                Log.d("PhotoPicker", "Selected URI: $uri")
+
+                val sharedPref = applicationContext.getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE)
+                with (sharedPref.edit()) {
+                    putString(getString(R.string.garden_background_image_key), uri.toString())
+                    apply()
+                }
+
+                val flag = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                applicationContext.contentResolver.takePersistableUriPermission(uri, flag)
+
+                val intent = Intent(this, MainActivity::class.java)
+                startActivityFromFragment(GardenFragment(), intent, 0)
+                finish()
+            } else {
+                Log.d("PhotoPicker", "No media selected")
+            }
+        }
+    }
+
+    private fun choosePhoto() {
+        pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+    }
 
     private fun requestPermissions() {
         activityResultLauncher.launch(REQUIRED_PERMISSIONS)

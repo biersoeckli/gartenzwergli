@@ -59,8 +59,6 @@ class HomeFragment() : Fragment(), CoroutineScope {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         cropEventsAdapter = CropEventsRecyclerViewAdapter(mutableListOf()) // ititialize empty list
-
-
     }
 
     fun loadHarvestItems() {
