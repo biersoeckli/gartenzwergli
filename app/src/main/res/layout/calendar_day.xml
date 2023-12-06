@@ -17,10 +17,18 @@
         tools:text="22" />
 
     <View
-        android:id="@+id/dayDotView"
+        android:id="@+id/dayDotViewCrop"
         android:layout_width="4.5dp"
         android:layout_height="4.5dp"
         android:layout_marginBottom="10dp"
         android:layout_gravity="bottom|center_horizontal"
+        android:background="@drawable/ic_home_black_24dp" />
+
+    <View
+        android:id="@+id/dayDotViewHarvest"
+        android:layout_width="4.5dp"
+        android:layout_height="4.5dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="10dp"
         android:background="@drawable/ic_home_black_24dp" />
 </FrameLayout>

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.MarginLayoutParams
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.children
@@ -40,6 +41,7 @@ import kotlin.coroutines.CoroutineContext
 
 class HomeFragment() : Fragment(), CoroutineScope {
 
+    private var cropsItems: List<CropEventAndCrop>? = null
     private var cropHarvestItems: List<CropEventHarvestItem>? = null
     private var _binding: FragmentHomeBinding? = null
 
@@ -73,6 +75,17 @@ class HomeFragment() : Fragment(), CoroutineScope {
         }
     }
 
+    fun loadCropsItems() {
+        val db = DatabaseService.getDb()
+        cropsItems = db.cropEventDao().getAllCropEventAndCrops()
+    }
+
+    fun getCropsItemsByDay(date: LocalDate): List<CropEventAndCrop> {
+        val crops =
+            cropsItems?.filter { it.cropEvent.dateTime == date.format(DateTimeFormatter.ISO_DATE) }
+        return crops ?: listOf()
+    }
+
     fun getHarvestItemsByDay(date: LocalDate): List<CropEventAndCrop> {
         val harvestItems = cropHarvestItems?.filter { it.harvestDate == date }?.map {
             if (!it.cropEventAndCrop.cropEvent.title.contains("[HARVEST]")) {
@@ -84,11 +97,9 @@ class HomeFragment() : Fragment(), CoroutineScope {
         return harvestItems ?: listOf()
     }
 
-    fun getCropsByDay(date: LocalDate): MutableList<CropEventAndCrop> {
-        val now = date.format(DateTimeFormatter.ISO_DATE)
-        val db = DatabaseService.getDb()
+    fun getAllCropsByDay(date: LocalDate): MutableList<CropEventAndCrop> {
         val harvestCrops = getHarvestItemsByDay(date)
-        val crops = db.cropEventDao().getCropEventsAndCropsByDate(now)
+        val crops = getCropsItemsByDay(date)
         return listOf(harvestCrops, crops).flatten().toMutableList()
     }
 
@@ -98,9 +109,9 @@ class HomeFragment() : Fragment(), CoroutineScope {
             this.selectedDate = date
         }
         if (selectedDate != null) {
-            cropEvents = getCropsByDay(selectedDate!!)
+            cropEvents = getAllCropsByDay(selectedDate!!)
         } else {
-            cropEvents = getCropsByDay(today)
+            cropEvents = getAllCropsByDay(today)
         }
         cropEventsAdapter.apply {
             this?.values?.clear()
@@ -130,6 +141,7 @@ class HomeFragment() : Fragment(), CoroutineScope {
             val dialogFragment = NewEventDialog()
 
             dialogFragment.onSuccessfullySavedAction.observe(viewLifecycleOwner) {
+                loadCropsItems()
                 refreshCropsOnUi()
             }
             dialogFragment.show(
@@ -143,6 +155,7 @@ class HomeFragment() : Fragment(), CoroutineScope {
 
         // rerender the crops every time when the fragment is loaded
         loadHarvestItems()
+        loadCropsItems()
         refreshCropsOnUi()
 
 
@@ -234,7 +247,8 @@ class HomeFragment() : Fragment(), CoroutineScope {
         class DayViewContainer(view: View) : ViewContainer(view) {
             lateinit var day: CalendarDay
             val textView = CalendarDayBinding.bind(view).dayText
-            val dotView = CalendarDayBinding.bind(view).dayDotView
+            val dotView = CalendarDayBinding.bind(view).dayDotViewCrop
+            val dotViewHarvest = CalendarDayBinding.bind(view).dayDotViewHarvest
 
             init {
                 view.setOnClickListener {
@@ -251,7 +265,8 @@ class HomeFragment() : Fragment(), CoroutineScope {
             override fun bind(container: DayViewContainer, data: CalendarDay) {
                 container.day = data
                 val textView = container.textView
-                val dotView = container.dotView
+                val dotViewCrop = container.dotView
+                val dotViewHarvest = container.dotViewHarvest
 
                 textView.text = data.date.dayOfMonth.toString()
 
@@ -262,26 +277,29 @@ class HomeFragment() : Fragment(), CoroutineScope {
                         today -> {
                             textView.setTextColor(Color.WHITE)
                             textView.setBackgroundResource(androidx.appcompat.R.color.material_blue_grey_800)
-                            dotView.visibility = View.VISIBLE
+
                         }
 
                         selectedDate -> {
                             textView.setTextColor(Color.BLUE)
                             textView.setBackgroundColor(Color.LTGRAY)
-                            dotView.visibility = View.INVISIBLE
                         }
 
                         else -> {
                             textView.setTextColor(Color.BLACK)
                             textView.background = null
-
-                            // set visible if data is available for the day
-                            dotView.isVisible = false
                         }
                     }
                 } else {
                     textView.setTextColor(Color.GRAY)
-                    dotView.visibility = View.INVISIBLE
+                    dotViewCrop.visibility = View.INVISIBLE
+                }
+                dotViewCrop.isVisible = getCropsItemsByDay(data.date).isNotEmpty()
+                dotViewHarvest.setBackgroundColor(Color.GREEN)
+                dotViewHarvest.isVisible = getHarvestItemsByDay(data.date).isNotEmpty()
+                if (dotViewCrop.isVisible && dotViewHarvest.isVisible) {
+                    setMargins(dotViewHarvest, 0, 0, 10, 10)
+                    setMargins(dotViewCrop, 10, 0, 0, 10)
                 }
             }
         }
@@ -291,6 +309,14 @@ class HomeFragment() : Fragment(), CoroutineScope {
         }
         binding.calendarViewCropCalendar.setup(startMonth, endMonth, firstDayOfWeek)
         binding.calendarViewCropCalendar.scrollToMonth(currentMonth)
+    }
+
+    fun setMargins(v: View, l: Int, t: Int, r: Int, b: Int) {
+        if (v.layoutParams is MarginLayoutParams) {
+            val p = v.layoutParams as MarginLayoutParams
+            p.setMargins(l, t, r, b)
+            v.requestLayout()
+        }
     }
 
     private fun updateTitle() {
