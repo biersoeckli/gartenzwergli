@@ -15,7 +15,7 @@ Before starting the development of the app, we created wireframes to get a bette
 ## Screenshots of the App
 <table width="100%">
 <tr>
-<td> <img src="assets/screenshot_calendar.png"> </td>
+<td> <img src="assets/screenshot_calendar.png"> <br> Calendar overview </td>
 <td> <img src="assets/screenshot_crop_list.png"> </td>
 <td> <img src="assets/screenshot_crop_search.png"> </td>
 <td> <img src="assets/screenshot_custom_crop.png"> </td>
