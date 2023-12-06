@@ -19,6 +19,7 @@ import ch.ost.gartenzwergli.databinding.CalendarDayBinding
 import ch.ost.gartenzwergli.databinding.FragmentHomeBinding
 import ch.ost.gartenzwergli.model.dbo.DUMMY_CROP_ID
 import ch.ost.gartenzwergli.model.dbo.cropevent.CropEventAndCrop
+import ch.ost.gartenzwergli.model.dbo.cropevent.CropEventHarvestItem
 import ch.ost.gartenzwergli.services.DatabaseService
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -39,6 +40,7 @@ import kotlin.coroutines.CoroutineContext
 
 class HomeFragment() : Fragment(), CoroutineScope {
 
+    private var cropHarvestItems: List<CropEventHarvestItem>? = null
     private var _binding: FragmentHomeBinding? = null
 
     private val binding get() = _binding!!
@@ -55,13 +57,39 @@ class HomeFragment() : Fragment(), CoroutineScope {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         cropEventsAdapter = CropEventsRecyclerViewAdapter(mutableListOf()) // ititialize empty list
+
+
+    }
+
+    fun loadHarvestItems() {
+        val db = DatabaseService.getDb()
+        val allItems = db.cropEventDao().getAllCropEventAndCrops()
+        cropHarvestItems = allItems.filter { it.crop?.medianDaysForFirstHarvest != null }.map {
+            val seedDateLocalDate =
+                LocalDate.parse(it.cropEvent.dateTime, DateTimeFormatter.ISO_DATE)
+            val harvestDate =
+                seedDateLocalDate.plusDays(it.crop!!.medianDaysForFirstHarvest!!.toLong());
+            CropEventHarvestItem(it, harvestDate)
+        }
+    }
+
+    fun getHarvestItemsByDay(date: LocalDate): List<CropEventAndCrop> {
+        val harvestItems = cropHarvestItems?.filter { it.harvestDate == date }?.map {
+            if (!it.cropEventAndCrop.cropEvent.title.contains("[HARVEST]")) {
+                it.cropEventAndCrop.cropEvent.title =
+                    "[HARVEST] ${it.cropEventAndCrop.cropEvent.title}"
+            }
+            it.cropEventAndCrop
+        }
+        return harvestItems ?: listOf()
     }
 
     fun getCropsByDay(date: LocalDate): MutableList<CropEventAndCrop> {
         val now = date.format(DateTimeFormatter.ISO_DATE)
         val db = DatabaseService.getDb()
+        val harvestCrops = getHarvestItemsByDay(date)
         val crops = db.cropEventDao().getCropEventsAndCropsByDate(now)
-        return crops.toMutableList()
+        return listOf(harvestCrops, crops).flatten().toMutableList()
     }
 
     fun refreshCropsOnUi(date: LocalDate? = null) {
@@ -114,6 +142,7 @@ class HomeFragment() : Fragment(), CoroutineScope {
 
 
         // rerender the crops every time when the fragment is loaded
+        loadHarvestItems()
         refreshCropsOnUi()
 
 

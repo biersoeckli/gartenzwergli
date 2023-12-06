@@ -27,7 +27,7 @@ class CropEventsRecyclerViewAdapter(
         val item = values[position]
         holder.textViewEvent.text = item.cropEvent.title
         holder.textViewCropName.text = item.cropEvent?.description ?: ""
-        holder.textViewEventTime.text = item.cropEvent.dateTime.toString()
+        holder.textViewEventTime.text = "Planted: ${item.cropEvent.dateTime.toString()}"
 
         if (item.crop?.thumnailPath != null) {
             val imgFile = item.crop.thumnailPath
