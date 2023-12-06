@@ -5,6 +5,7 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import ch.ost.gartenzwergli.model.dbo.CropDbo
+import ch.ost.gartenzwergli.model.dbo.DUMMY_CROP_ID
 import ch.ost.gartenzwergli.model.dbo.ParameterDbo
 import ch.ost.gartenzwergli.model.dbo.cropevent.CropEventDbo
 import ch.ost.gartenzwergli.model.dto.growstuff.GrowstuffCropDto
@@ -45,11 +46,33 @@ class DataStorage() {
     suspend fun runInitial(ctx: Context) {
         if (isInitialRunNecessary()) {
             syncAllCrops()
+            createDummyCropIfNotExists()
             syncImagesForCrops(ctx)
             db.parameterDao().insertAll(
                 ParameterDbo(
                     lastUpdateParamKey,
                     LocalDate.now().toString()
+                )
+            )
+        }
+    }
+
+     fun createDummyCropIfNotExists() {
+        val dummyCrop = db.cropDao().findById(DUMMY_CROP_ID)
+        if (dummyCrop == null) {
+            db.cropDao().insertAll(
+                CropDbo(
+                    DUMMY_CROP_ID,
+                    0,
+                    "Dummy Crop",
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
                 )
             )
         }

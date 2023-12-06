@@ -4,17 +4,20 @@ import android.app.DatePickerDialog
 import android.app.Dialog
 import android.os.Bundle
 import android.text.Editable
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
 import ch.ost.gartenzwergli.R
 import ch.ost.gartenzwergli.databinding.FragmentNewEventDialogBinding
+import ch.ost.gartenzwergli.model.dbo.DUMMY_CROP_ID
 import ch.ost.gartenzwergli.model.dbo.cropevent.CropEventDbo
 import ch.ost.gartenzwergli.services.DatabaseService
 import java.util.Calendar
+
 
 /**
  * A simple [Fragment] subclass.
@@ -25,6 +28,7 @@ class NewEventDialog : DialogFragment() {
 
     private var _toolbar: Toolbar? = null
     private var _binding: FragmentNewEventDialogBinding? = null
+    val onSuccessfullySavedAction = MutableLiveData<String>()
 
     private val binding get() = _binding!!
 
@@ -74,16 +78,20 @@ class NewEventDialog : DialogFragment() {
             when (item.itemId) {
                 R.id.action_new_event -> {
 
-                    /*
+                    val dateString = binding.newEventCalendarText.text.toString()
+                    val date = simpleDateFormat.parse(dateString)
+                    val dateFormat = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.GERMANY)
+                        .format(date!!)
+
                     DatabaseService.getDb().cropEventDao().insertAll(
                         CropEventDbo(
                             title = binding.newEventPlantText.text.toString(),
-                            description = "",
-                            dateTime = binding.newEventCalendarText.text.toString(),
-                            cropId = "1" // todo ein dummy crop muss erstellt werden
+                            description = binding.newEventPlantDescription.text.toString(),
+                            dateTime = dateFormat,
+                            cropId = DUMMY_CROP_ID
                         )
-                    )*/
-
+                    )
+                    onSuccessfullySavedAction.setValue("saved")
                     dismiss()
                     return@OnMenuItemClickListener true
                 }

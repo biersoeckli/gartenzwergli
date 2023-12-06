@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.MarginLayoutParams
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.children
@@ -13,10 +14,13 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import cancelNotificationForCropEvent
 import ch.ost.gartenzwergli.R
 import ch.ost.gartenzwergli.databinding.CalendarDayBinding
 import ch.ost.gartenzwergli.databinding.FragmentHomeBinding
+import ch.ost.gartenzwergli.model.dbo.DUMMY_CROP_ID
 import ch.ost.gartenzwergli.model.dbo.cropevent.CropEventAndCrop
+import ch.ost.gartenzwergli.model.dbo.cropevent.CropEventHarvestItem
 import ch.ost.gartenzwergli.services.DatabaseService
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -37,6 +41,8 @@ import kotlin.coroutines.CoroutineContext
 
 class HomeFragment() : Fragment(), CoroutineScope {
 
+    private var cropsItems: List<CropEventAndCrop>? = null
+    private var cropHarvestItems: List<CropEventHarvestItem>? = null
     private var _binding: FragmentHomeBinding? = null
 
     private val binding get() = _binding!!
@@ -53,13 +59,66 @@ class HomeFragment() : Fragment(), CoroutineScope {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         cropEventsAdapter = CropEventsRecyclerViewAdapter(mutableListOf()) // ititialize empty list
+
+
     }
 
-    fun getCropsByDay(date: LocalDate): MutableList<CropEventAndCrop> {
-        val now = date.format(DateTimeFormatter.ISO_DATE)
+    fun loadHarvestItems() {
         val db = DatabaseService.getDb()
-        val crops = db.cropEventDao().getCropEventsAndCropsByDate(now)
-        return crops.toMutableList()
+        val allItems = db.cropEventDao().getAllCropEventAndCrops()
+        cropHarvestItems = allItems.filter { it.crop?.medianDaysForFirstHarvest != null }.map {
+            val seedDateLocalDate =
+                LocalDate.parse(it.cropEvent.dateTime, DateTimeFormatter.ISO_DATE)
+            val harvestDate =
+                seedDateLocalDate.plusDays(it.crop!!.medianDaysForFirstHarvest!!.toLong());
+            CropEventHarvestItem(it, harvestDate)
+        }
+    }
+
+    fun loadCropsItems() {
+        val db = DatabaseService.getDb()
+        cropsItems = db.cropEventDao().getAllCropEventAndCrops()
+    }
+
+    fun getCropsItemsByDay(date: LocalDate): List<CropEventAndCrop> {
+        val crops =
+            cropsItems?.filter { it.cropEvent.dateTime == date.format(DateTimeFormatter.ISO_DATE) }
+        return crops ?: listOf()
+    }
+
+    fun getHarvestItemsByDay(date: LocalDate): List<CropEventAndCrop> {
+        val harvestItems = cropHarvestItems?.filter { it.harvestDate == date }?.map {
+            if (!it.cropEventAndCrop.cropEvent.title.contains("[HARVEST]")) {
+                it.cropEventAndCrop.cropEvent.title =
+                    "[HARVEST] ${it.cropEventAndCrop.cropEvent.title}"
+            }
+            it.cropEventAndCrop
+        }
+        return harvestItems ?: listOf()
+    }
+
+    fun getAllCropsByDay(date: LocalDate): MutableList<CropEventAndCrop> {
+        val harvestCrops = getHarvestItemsByDay(date)
+        val crops = getCropsItemsByDay(date)
+        return listOf(harvestCrops, crops).flatten().toMutableList()
+    }
+
+    fun refreshCropsOnUi(date: LocalDate? = null) {
+        val cropEvents: MutableList<CropEventAndCrop>?;
+        if (date != null) {
+            this.selectedDate = date
+        }
+        if (selectedDate != null) {
+            cropEvents = getAllCropsByDay(selectedDate!!)
+        } else {
+            cropEvents = getAllCropsByDay(today)
+        }
+        cropEventsAdapter.apply {
+            this?.values?.clear()
+            this?.values?.addAll(cropEvents)
+            this?.notifyDataSetChanged()
+            updateEmptyView(binding.calendarEventsRecyclerView, binding.root)
+        }
     }
 
     override fun onCreateView(
@@ -79,7 +138,13 @@ class HomeFragment() : Fragment(), CoroutineScope {
         val floatingActionButtonNewCropEvent: FloatingActionButton =
             binding.floatingActionButtonNewCropEvent
         floatingActionButtonNewCropEvent.setOnClickListener {
-            NewEventDialog().show(
+            val dialogFragment = NewEventDialog()
+
+            dialogFragment.onSuccessfullySavedAction.observe(viewLifecycleOwner) {
+                loadCropsItems()
+                refreshCropsOnUi()
+            }
+            dialogFragment.show(
                 childFragmentManager, null
             )
         }
@@ -89,18 +154,9 @@ class HomeFragment() : Fragment(), CoroutineScope {
 
 
         // rerender the crops every time when the fragment is loaded
-        val cropEvents: MutableList<CropEventAndCrop>?;
-        if (selectedDate != null) {
-            cropEvents = getCropsByDay(selectedDate!!)
-        } else {
-            cropEvents = getCropsByDay(today)
-        }
-        cropEventsAdapter.apply {
-            this?.values?.clear()
-            this?.values?.addAll(cropEvents!!)
-            this?.notifyDataSetChanged()
-            updateEmptyView(binding.calendarEventsRecyclerView, binding.root)
-        }
+        loadHarvestItems()
+        loadCropsItems()
+        refreshCropsOnUi()
 
 
         val swipeController = object : SwipeToDeleteCallback(context) {
@@ -110,7 +166,10 @@ class HomeFragment() : Fragment(), CoroutineScope {
                 val cropEvent: CropEventAndCrop? = cropEventsAdapter?.values?.get(position);
 
                 if (cropEvent != null) {
-                    DatabaseService.getDb().cropEventDao().delete(cropEvent!!.cropEvent!!)
+                    DatabaseService.getDb().cropEventDao().delete(cropEvent.cropEvent)
+                    if (cropEvent.cropEvent.id != DUMMY_CROP_ID) {
+                        cancelNotificationForCropEvent(context!!, cropEvent.cropEvent.id)
+                    }
                 }
                 cropEventsAdapter?.values?.removeAt(position)
                 cropEventsAdapter?.notifyItemRemoved(position)
@@ -188,7 +247,8 @@ class HomeFragment() : Fragment(), CoroutineScope {
         class DayViewContainer(view: View) : ViewContainer(view) {
             lateinit var day: CalendarDay
             val textView = CalendarDayBinding.bind(view).dayText
-            val dotView = CalendarDayBinding.bind(view).dayDotView
+            val dotView = CalendarDayBinding.bind(view).dayDotViewCrop
+            val dotViewHarvest = CalendarDayBinding.bind(view).dayDotViewHarvest
 
             init {
                 view.setOnClickListener {
@@ -205,7 +265,8 @@ class HomeFragment() : Fragment(), CoroutineScope {
             override fun bind(container: DayViewContainer, data: CalendarDay) {
                 container.day = data
                 val textView = container.textView
-                val dotView = container.dotView
+                val dotViewCrop = container.dotView
+                val dotViewHarvest = container.dotViewHarvest
 
                 textView.text = data.date.dayOfMonth.toString()
 
@@ -216,26 +277,29 @@ class HomeFragment() : Fragment(), CoroutineScope {
                         today -> {
                             textView.setTextColor(Color.WHITE)
                             textView.setBackgroundResource(androidx.appcompat.R.color.material_blue_grey_800)
-                            dotView.visibility = View.VISIBLE
+
                         }
 
                         selectedDate -> {
                             textView.setTextColor(Color.BLUE)
                             textView.setBackgroundColor(Color.LTGRAY)
-                            dotView.visibility = View.INVISIBLE
                         }
 
                         else -> {
                             textView.setTextColor(Color.BLACK)
                             textView.background = null
-
-                            // set visible if data is available for the day
-                            dotView.isVisible = false
                         }
                     }
                 } else {
                     textView.setTextColor(Color.GRAY)
-                    dotView.visibility = View.INVISIBLE
+                    dotViewCrop.visibility = View.INVISIBLE
+                }
+                dotViewCrop.isVisible = getCropsItemsByDay(data.date).isNotEmpty()
+                dotViewHarvest.setBackgroundColor(Color.GREEN)
+                dotViewHarvest.isVisible = getHarvestItemsByDay(data.date).isNotEmpty()
+                if (dotViewCrop.isVisible && dotViewHarvest.isVisible) {
+                    setMargins(dotViewHarvest, 0, 0, 10, 10)
+                    setMargins(dotViewCrop, 10, 0, 0, 10)
                 }
             }
         }
@@ -245,6 +309,14 @@ class HomeFragment() : Fragment(), CoroutineScope {
         }
         binding.calendarViewCropCalendar.setup(startMonth, endMonth, firstDayOfWeek)
         binding.calendarViewCropCalendar.scrollToMonth(currentMonth)
+    }
+
+    fun setMargins(v: View, l: Int, t: Int, r: Int, b: Int) {
+        if (v.layoutParams is MarginLayoutParams) {
+            val p = v.layoutParams as MarginLayoutParams
+            p.setMargins(l, t, r, b)
+            v.requestLayout()
+        }
     }
 
     private fun updateTitle() {
@@ -261,20 +333,9 @@ class HomeFragment() : Fragment(), CoroutineScope {
 
             oldDate?.let { binding.calendarViewCropCalendar.notifyDateChanged(it) }
             binding.calendarViewCropCalendar.notifyDateChanged(date)
-            updateAdapterForDate(date)
+            refreshCropsOnUi(date)
+            binding.selectedDateText.text = selectionFormatter.format(date)
         }
-    }
-
-    private fun updateAdapterForDate(date: LocalDate) {
-        val cropEvents = getCropsByDay(date)
-        cropEventsAdapter.apply {
-            this?.values?.clear()
-            this?.values?.addAll(cropEvents)
-            this?.notifyDataSetChanged()
-            updateEmptyView(binding.calendarEventsRecyclerView, binding.root)
-        }
-
-        binding.selectedDateText.text = selectionFormatter.format(date)
     }
 
     override fun onDestroyView() {

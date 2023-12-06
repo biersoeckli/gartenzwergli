@@ -122,16 +122,19 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.0" />
 
-            <Spinner
-                android:id="@+id/spinner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="56dp"
-                android:layout_marginTop="24dp"
-                android:tooltipText="Select event type"
+            <EditText
+                android:id="@+id/newEventPlantDescription"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="32dp"
+                android:hint="Description (optional)"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/layout_newEventPlantIcon"
-                app:layout_constraintTop_toBottomOf="@+id/newEventPlantText" />
+                app:layout_constraintTop_toBottomOf="@+id/newEventPlantText"
+                app:layout_constraintVertical_bias="1.0" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -145,7 +148,8 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="24dp">
+            android:padding="24dp"
+            android:visibility="invisible">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/layout_newEventBellIcon"

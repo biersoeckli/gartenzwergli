@@ -3,12 +3,10 @@ package ch.ost.gartenzwergli.ui.crops.cropDetail
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.view.MenuItem
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import ch.ost.gartenzwergli.InitialDataLoaderActivity
 import ch.ost.gartenzwergli.R
 import ch.ost.gartenzwergli.model.dbo.CropDbo
 import ch.ost.gartenzwergli.services.DataStorage
@@ -56,6 +54,10 @@ class CropDetailActivity() : AppCompatActivity(), CoroutineScope {
             }
 
             findViewById<TextView>(R.id.cropDescriptionTextView).setText(cropDbo!!.description)
+
+            if (cropDbo!!.medianDaysForFirstHarvest != null)
+                findViewById<TextView>(R.id.medianDaysForFirstHarvestTextView)
+                    .setText(cropDbo!!.medianDaysForFirstHarvest!!.toString() + " days unitl harvest")
 
             if (cropDbo!!.thumnailPath != null) {
                 val imgFile = File(cropDbo!!.thumnailPath!!);

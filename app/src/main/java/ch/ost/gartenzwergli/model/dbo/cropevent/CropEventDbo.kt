@@ -8,7 +8,7 @@ import java.util.UUID
 @Entity("crop_event")
 data class CropEventDbo(
     @PrimaryKey var id: String = UUID.randomUUID().toString(),
-    val title: String,
+    var title: String,
     val description: String?,
     val dateTime: String,
     val cropId: String,
