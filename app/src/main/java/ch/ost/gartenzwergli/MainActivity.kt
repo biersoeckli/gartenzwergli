@@ -56,6 +56,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
 
         if (intent.getStringExtra("openFragment").equals("GardenFragment")) {
             navController.navigate(R.id.navigation_garden)
+            intent.removeExtra("openFragment")
         }
     }
 

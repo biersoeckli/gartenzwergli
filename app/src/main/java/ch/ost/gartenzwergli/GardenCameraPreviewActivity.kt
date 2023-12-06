@@ -7,10 +7,12 @@ import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.edit
 import ch.ost.gartenzwergli.databinding.ActivityGardenCameraPreviewBinding
 import ch.ost.gartenzwergli.utils.BitmapUtils
 import kotlinx.coroutines.CoroutineScope
@@ -52,9 +54,9 @@ class GardenCameraPreviewActivity : AppCompatActivity(), CoroutineScope {
     }
 
     private fun onClickUseImage() {
-        val sharedPref = getPreferences(Context.MODE_PRIVATE) ?: return
+        val sharedPref = applicationContext.getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE)
         with (sharedPref.edit()) {
-            putString(getString(R.string.garden_background_image_key), extraImageUri)
+            putString(getString(R.string.garden_background_image_key), extraImageUri.toString())
             apply()
         }
 

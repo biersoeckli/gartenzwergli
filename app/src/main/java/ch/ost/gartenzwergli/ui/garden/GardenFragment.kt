@@ -5,11 +5,11 @@ import android.content.Intent
 import android.net.Uri
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import ch.ost.gartenzwergli.GardenCameraActivity
 import ch.ost.gartenzwergli.R
 import ch.ost.gartenzwergli.databinding.FragmentGardenBinding
@@ -49,10 +49,15 @@ class GardenFragment : Fragment() {
             }
         }
 
-        val sharedPref = activity?.getPreferences(
-            Context.MODE_PRIVATE)
-        val gardenBackgroundImage = sharedPref?.getString(
-            getString(R.string.garden_background_image_key), null)
+        val sharedPref = activity?.applicationContext?.getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE)
+        sharedPref?.all?.forEach { (key, value) ->
+            Log.d(TAG, "key: $key, value: $value")
+        }
+
+        val gardenBackgroundImage = sharedPref?.getString(getString(R.string.garden_background_image_key), null)
+
+        Log.d(TAG, "sharedPref: ${sharedPref.toString()}")
+        Log.d(TAG, "gardenBackgroundImage: $gardenBackgroundImage")
 
         if (gardenBackgroundImage != null) {
             val gardenBackgroundImageUri = Uri.parse(gardenBackgroundImage)

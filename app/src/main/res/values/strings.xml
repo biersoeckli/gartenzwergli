@@ -3,7 +3,7 @@
     <string name="default_notification_channel_name">Crop Updates</string>
     <string name="title_home">Home</string>
     <string name="title_crops">Crops</string>
-    <string name="title_garden">Garden</string>
+    <string name="title_garden">My Garden</string>
     <string name="my_crop_calendar">My Crop Calendar</string>
     <string name="today">Today</string>
     <string name="crop_event_description">Crop Event</string>
@@ -20,5 +20,7 @@
     <string name="title_activity_garden_camera">GardenCameraActivity</string>
 
     <string name="take_photo">Take Photo</string>
+
+    <string name="preference_file_key">ch.ost.gartenzwergli.GARTENZWERGLI_PREFERENCE_FILE</string>
     <string name="garden_background_image_key">GARDEN_BACKGROUND_IMAGE_KEY</string>
 </resources>

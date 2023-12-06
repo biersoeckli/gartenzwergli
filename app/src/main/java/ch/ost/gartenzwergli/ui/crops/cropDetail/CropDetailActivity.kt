@@ -44,7 +44,7 @@ class CropDetailActivity() : AppCompatActivity(), CoroutineScope {
         launch {
             val dataStorage = DataStorage()
             dataStorage.syncDetailCropDboIfNeeded(cropDboId!!)
-            cropDbo = DatabaseService.getDb().cropDao().findById(cropDboId!!)
+            cropDbo = DatabaseService.getDb().cropDao().findById(cropDboId)
             val cropName = cropDbo!!.name.titlecase()
 
             findViewById<TextView>(R.id.cropTitleTextView).setText(cropName)
