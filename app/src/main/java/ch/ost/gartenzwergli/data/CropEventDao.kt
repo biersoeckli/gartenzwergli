@@ -15,6 +15,10 @@ interface CropEventDao {
     @Query("SELECT * FROM crop_event")
     fun getAll(): List<CropEventDbo>
 
+
+    @Query("SELECT * FROM crop_event WHERE id = :id")
+    fun getById(id: String): CropEventAndCrop
+
     @Transaction
     @Query("SELECT * FROM crop_event WHERE date(dateTime) = :date")
     fun getCropEventsAndCropsByDate(date: String): List<CropEventAndCrop>

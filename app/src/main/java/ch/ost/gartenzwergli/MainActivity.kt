@@ -1,13 +1,8 @@
 package ch.ost.gartenzwergli
 
-import android.Manifest
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import androidx.annotation.RequiresApi
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -15,6 +10,7 @@ import androidx.navigation.ui.setupWithNavController
 import ch.ost.gartenzwergli.databinding.ActivityMainBinding
 import ch.ost.gartenzwergli.services.DataStorage
 import ch.ost.gartenzwergli.services.DatabaseService
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -37,8 +33,8 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
                 }
             } else {
                 dataStorage.syncDetailDataFromNewCropDbos()
+                dataStorage.createDummyCropIfNotExists()
             }
-            dataStorage.createDummyCropIfNotExists()
         }
         // !!! END | THIS HAS TO BE EXECUTED AT APPLICATION START | END !!!
 
@@ -57,7 +53,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-
     }
 
     override val coroutineContext: CoroutineContext

@@ -45,8 +45,8 @@ class DataStorage() {
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun runInitial(ctx: Context) {
         if (isInitialRunNecessary()) {
-            createDummyCropIfNotExists()
             syncAllCrops()
+            createDummyCropIfNotExists()
             syncImagesForCrops(ctx)
             db.parameterDao().insertAll(
                 ParameterDbo(

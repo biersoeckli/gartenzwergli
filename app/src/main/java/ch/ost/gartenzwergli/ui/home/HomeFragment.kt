@@ -13,9 +13,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import cancelNotificationForCropEvent
 import ch.ost.gartenzwergli.R
 import ch.ost.gartenzwergli.databinding.CalendarDayBinding
 import ch.ost.gartenzwergli.databinding.FragmentHomeBinding
+import ch.ost.gartenzwergli.model.dbo.DUMMY_CROP_ID
 import ch.ost.gartenzwergli.model.dbo.cropevent.CropEventAndCrop
 import ch.ost.gartenzwergli.services.DatabaseService
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -74,7 +76,7 @@ class HomeFragment() : Fragment(), CoroutineScope {
         }
         cropEventsAdapter.apply {
             this?.values?.clear()
-            this?.values?.addAll(cropEvents!!)
+            this?.values?.addAll(cropEvents)
             this?.notifyDataSetChanged()
             updateEmptyView(binding.calendarEventsRecyclerView, binding.root)
         }
@@ -122,7 +124,10 @@ class HomeFragment() : Fragment(), CoroutineScope {
                 val cropEvent: CropEventAndCrop? = cropEventsAdapter?.values?.get(position);
 
                 if (cropEvent != null) {
-                    DatabaseService.getDb().cropEventDao().delete(cropEvent!!.cropEvent!!)
+                    DatabaseService.getDb().cropEventDao().delete(cropEvent.cropEvent)
+                    if (cropEvent.cropEvent.id != DUMMY_CROP_ID) {
+                        cancelNotificationForCropEvent(context!!, cropEvent.cropEvent.id)
+                    }
                 }
                 cropEventsAdapter?.values?.removeAt(position)
                 cropEventsAdapter?.notifyItemRemoved(position)
