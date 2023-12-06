@@ -13,10 +13,13 @@ Before starting the development of the app, we created wireframes to get a bette
 [Gartenzwergli Wireframes as PDF](https://github.com/biersoeckli/gartenzwergli/files/12783116/New.Project.1.pdf)
 
 ## Screenshots of the App
-<table>
+<table width="100%">
 <tr>
-<td> ![screenshot_calendar](assets/screenshot_calendar.png) </td>
 <td> <img src="assets/screenshot_calendar.png"> </td>
+<td> <img src="assets/screenshot_crop_list.png"> </td>
+<td> <img src="assets/screenshot_crop_search.png"> </td>
+<td> <img src="assets/screenshot_custom_crop.png"> </td>
+<td> todo </td>
 </tr>
 </table>
 
