@@ -1,6 +1,7 @@
 package ch.ost.gartenzwergli
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
@@ -11,6 +12,7 @@ import android.util.Log
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import ch.ost.gartenzwergli.databinding.ActivityGardenCameraPreviewBinding
+import ch.ost.gartenzwergli.utils.BitmapUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -19,6 +21,7 @@ import kotlin.coroutines.CoroutineContext
 
 class GardenCameraPreviewActivity : AppCompatActivity(), CoroutineScope {
     private lateinit var viewBinding: ActivityGardenCameraPreviewBinding
+    private var extraImageUri: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,33 +29,45 @@ class GardenCameraPreviewActivity : AppCompatActivity(), CoroutineScope {
         setContentView(viewBinding.root)
 
         launch {
-            setupPreviewImage(viewBinding.root.context)
+            setupPreviewImage()
+        }
+
+        viewBinding.use.setOnClickListener {
+            onClickUseImage()
+        }
+
+        viewBinding.cancel.setOnClickListener {
+            onClickRetakeImage()
         }
     }
 
-    private fun setupPreviewImage(context: Context) {
+    private fun setupPreviewImage() {
         val previewImage: ImageView = viewBinding.previewImage
-        val extraImageUri = intent.getStringExtra(EXTRA_IMAGE_PATH)
+        extraImageUri = intent.getStringExtra(EXTRA_IMAGE_PATH)
 
         Log.d(TAG, "extraImageUri: $extraImageUri")
 
-        val bitmap = getCapturedImage(Uri.parse(extraImageUri))
+        val bitmap = BitmapUtils().getCapturedImage(this.contentResolver, Uri.parse(extraImageUri))
         previewImage.setImageBitmap(bitmap)
     }
 
-    private fun getCapturedImage(selectedPhotoUri: Uri): Bitmap {
-        val bitmap = when {
-            Build.VERSION.SDK_INT < 28 -> MediaStore.Images.Media.getBitmap(
-                this.contentResolver,
-                selectedPhotoUri
-            )
-
-            else -> {
-                val source = ImageDecoder.createSource(this.contentResolver, selectedPhotoUri)
-                ImageDecoder.decodeBitmap(source)
-            }
+    private fun onClickUseImage() {
+        val sharedPref = getPreferences(Context.MODE_PRIVATE) ?: return
+        with (sharedPref.edit()) {
+            putString(getString(R.string.garden_background_image_key), extraImageUri)
+            apply()
         }
-        return bitmap
+
+        val intent = Intent(this, MainActivity::class.java)
+        intent.putExtra("openFragment", "GardenFragment")
+        navigateUpTo(intent)
+        finish()
+    }
+
+    private fun onClickRetakeImage() {
+        // go back to camera activity
+        finish()
+        super.onBackPressed()
     }
 
     companion object {

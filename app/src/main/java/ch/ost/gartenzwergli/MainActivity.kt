@@ -53,6 +53,10 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        if (intent.getStringExtra("openFragment").equals("GardenFragment")) {
+            navController.navigate(R.id.navigation_garden)
+        }
     }
 
     override val coroutineContext: CoroutineContext
