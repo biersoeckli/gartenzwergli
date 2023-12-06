@@ -15,8 +15,8 @@ Before starting the development of the app, we created wireframes to get a bette
 ## Screenshots of the App
 <table>
 <tr>
-<td>![screenshot_calendar](https://github.com/biersoeckli/gartenzwergli/tree/main/assets/screenshot_calendar.png)</td>
-<td>![screenshot_calendar](https://github.com/biersoeckli/gartenzwergli/tree/main/assets/screenshot_calendar.png)</td>
+<td>![screenshot_calendar](assets/screenshot_calendar.png)</td>
+<td>![screenshot_calendar](assets/screenshot_calendar.png)</td>
 </tr>
 </table>
 
