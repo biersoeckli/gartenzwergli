@@ -1,24 +1,23 @@
 package ch.ost.gartenzwergli.ui.garden
 
+import android.content.Intent
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import ch.ost.gartenzwergli.GardenCameraActivity
 import ch.ost.gartenzwergli.R
 import ch.ost.gartenzwergli.databinding.FragmentGardenBinding
-import ch.ost.gartenzwergli.databinding.FragmentHomeBinding
-import com.google.android.material.snackbar.Snackbar
 
 class GardenFragment : Fragment() {
-
     private var _binding: FragmentGardenBinding? = null
 
     private val binding get() = _binding!!
 
     companion object {
-        fun newInstance() = GardenFragment()
+        private const val TAG = "GardenFragment"
     }
 
     private lateinit var viewModel: GardenViewModel
@@ -26,7 +25,7 @@ class GardenFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentGardenBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
@@ -35,8 +34,9 @@ class GardenFragment : Fragment() {
         binding.gardenToolbar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.garden_settings -> {
-                    // Handle favorite icon press
-                    Snackbar.make(root, "Settings", Snackbar.LENGTH_SHORT).show()
+                    val cameraActivity = Intent(this.context, GardenCameraActivity::class.java)
+                    startActivity(cameraActivity)
+
                     true
                 }
 

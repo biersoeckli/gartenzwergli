@@ -14,6 +14,7 @@ import ch.ost.gartenzwergli.model.dbo.CropDbo
 import ch.ost.gartenzwergli.services.DataStorage
 import ch.ost.gartenzwergli.services.DatabaseService
 import ch.ost.gartenzwergli.ui.crops.addCropToBed.AddCropToBedActivity
+import ch.ost.gartenzwergli.ui.crops.titlecase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -46,7 +47,14 @@ class CropDetailActivity() : AppCompatActivity(), CoroutineScope {
             val dataStorage = DataStorage()
             dataStorage.syncDetailCropDboIfNeeded(cropDboId!!)
             cropDbo = DatabaseService.getDb().cropDao().findById(cropDboId!!)
-            findViewById<TextView>(R.id.cropTitleTextView).setText(cropDbo!!.name)
+            val cropName = cropDbo!!.name.titlecase()
+
+            findViewById<TextView>(R.id.cropTitleTextView).setText(cropName)
+
+            if (actionBar != null) {
+                actionBar.title = cropName
+            }
+
             findViewById<TextView>(R.id.cropDescriptionTextView).setText(cropDbo!!.description)
 
             if (cropDbo!!.thumnailPath != null) {
