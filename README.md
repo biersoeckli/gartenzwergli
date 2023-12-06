@@ -13,13 +13,13 @@ Before starting the development of the app, we created wireframes to get a bette
 [Gartenzwergli Wireframes as PDF](https://github.com/biersoeckli/gartenzwergli/files/12783116/New.Project.1.pdf)
 
 ## Screenshots of the App
-<table width="100%">
+<table width="100%" style="text-align: center;">
 <tr>
-<td> <img src="assets/screenshot_calendar.png"> <br> Calendar overview </td>
-<td> <img src="assets/screenshot_crop_list.png"> </td>
-<td> <img src="assets/screenshot_crop_search.png"> </td>
-<td> <img src="assets/screenshot_custom_crop.png"> </td>
-<td> todo </td>
+<td> <img src="assets/screenshot_calendar.png"><br>Crop Calendar</td>
+<td> <img src="assets/screenshot_crop_list.png"><br>Crop overview</td>
+<td> <img src="assets/screenshot_crop_search.png"><br>Crop search</td>
+<td> <img src="assets/screenshot_custom_crop.png"><br>Create custom crop</td>
+<td> todo <br>"My Garden" overview</td>
 </tr>
 </table>
 
