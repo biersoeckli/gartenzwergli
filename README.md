@@ -64,3 +64,4 @@ the app and its functionality.
 ### Additional points
 
 * Usage of WorkerManager to schedule Push Notifications
+* Dark mode support
