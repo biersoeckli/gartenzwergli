@@ -2,6 +2,7 @@ package ch.ost.gartenzwergli.ui.home
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,7 +23,7 @@ import ch.ost.gartenzwergli.databinding.CalendarDayBinding
 import ch.ost.gartenzwergli.databinding.FragmentHomeBinding
 import ch.ost.gartenzwergli.model.dbo.DUMMY_CROP_ID
 import ch.ost.gartenzwergli.model.dbo.cropevent.CropEventAndCrop
-import ch.ost.gartenzwergli.model.dbo.cropevent.CropEventHarvestItem
+import ch.ost.gartenzwergli.model.dbo.cropevent.CropEventDbo
 import ch.ost.gartenzwergli.services.DatabaseService
 import ch.ost.gartenzwergli.ui.garden.GardenViewModel
 import ch.ost.gartenzwergli.ui.garden.GardenViewModelFactory
@@ -36,12 +37,14 @@ import com.kizitonwose.calendar.view.ViewContainer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
+import java.util.UUID
 import kotlin.coroutines.CoroutineContext
 
 class HomeFragment() : Fragment(), CoroutineScope {
@@ -129,12 +132,27 @@ class HomeFragment() : Fragment(), CoroutineScope {
                 ?.let { it1 -> NewEventDialog.newInstance(it1) }
 
             dialogFragment?.onSuccessfullySavedAction?.observe(viewLifecycleOwner) {
-                //loadCropsItems()
-                //refreshCropsOnUi()
+                refreshCropsOnUi(selectedDate)
             }
             dialogFragment?.show(
                 childFragmentManager, null
             )
+        }
+
+        val currentMonth = YearMonth.now()
+        val startMonth = currentMonth.minusMonths(200)
+        val endMonth = currentMonth.plusMonths(200)
+
+        val daysOfWeek = daysOfWeek()
+        gardenViewModel.cropEventAndCrops.observe(viewLifecycleOwner) { cropEvents ->
+            cropsItems = cropEvents
+            val filteredCropEvents = cropEvents.filter { it.cropEvent.dateTime == today?.format(DateTimeFormatter.ISO_DATE) }
+
+            setupMonthCalendar(startMonth, endMonth, currentMonth, daysOfWeek.first())
+
+            val recyclerView: RecyclerView = binding.calendarEventsRecyclerView
+            recyclerView.adapter = CropEventsRecyclerViewAdapter(filteredCropEvents)
+            updateEmptyView(recyclerView, binding.root)
         }
 
         val recyclerViewCropEvents: RecyclerView = binding.calendarEventsRecyclerView
@@ -143,8 +161,13 @@ class HomeFragment() : Fragment(), CoroutineScope {
         val swipeController = object : SwipeToDeleteCallback(context) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
 
-                val position = viewHolder.absoluteAdapterPosition
-                val cropEvent: CropEventAndCrop? = cropEventsAdapter?.values?.get(position);
+                val position = viewHolder.bindingAdapterPosition
+
+                Log.d("HomeFragment", "onSwiped: position: $position")
+
+                val cropEvent: CropEventAndCrop? = cropsItems?.get(position)
+
+                Log.d("HomeFragment", "onSwiped: cropEvent: $cropEvent")
 
                 if (cropEvent != null) {
                     DatabaseService.getDb().cropEventDao().delete(cropEvent.cropEvent)
@@ -164,14 +187,15 @@ class HomeFragment() : Fragment(), CoroutineScope {
 
                 updateEmptyView(recyclerViewCropEvents, binding.root)
 
-                // nice to have feature
-                /*snackbar.setAction("UNDO") {
+                snackbar.setAction("UNDO") {
                     if (cropEvent != null) {
-                        cropEventsAdapter?.values?.add(position, cropEvent)
+                        cropEvent.cropEvent.id = UUID.randomUUID().toString()
+                        cropEventsAdapter?.values?.plus(cropEvent)
+                        insertCropEvent(cropEvent.cropEvent)
                     }
                     cropEventsAdapter?.notifyItemInserted(position)
                     recyclerViewCropEvents.scrollToPosition(position)
-                }*/
+                }
                 snackbar.setActionTextColor(Color.YELLOW)
                 snackbar.anchorView = floatingActionButtonNewCropEvent
                 snackbar.show()
@@ -190,7 +214,6 @@ class HomeFragment() : Fragment(), CoroutineScope {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         val daysOfWeek = daysOfWeek()
 
         binding.legendLayout.root.children
@@ -200,21 +223,6 @@ class HomeFragment() : Fragment(), CoroutineScope {
                     daysOfWeek[index].getDisplayName(TextStyle.SHORT, Locale.getDefault())
                 textView.setTextColor(Color.WHITE)
             }
-
-        val currentMonth = YearMonth.now()
-        val startMonth = currentMonth.minusMonths(200)
-        val endMonth = currentMonth.plusMonths(200)
-
-        gardenViewModel.cropEventAndCrops.observe(viewLifecycleOwner) { cropEvents ->
-            cropsItems = cropEvents
-            val filteredCropEvents = cropEvents.filter { it.cropEvent.dateTime == today?.format(DateTimeFormatter.ISO_DATE) }
-
-            setupMonthCalendar(startMonth, endMonth, currentMonth, daysOfWeek.first())
-
-            val recyclerView: RecyclerView = binding.calendarEventsRecyclerView
-            recyclerView.adapter = CropEventsRecyclerViewAdapter(filteredCropEvents)
-            updateEmptyView(recyclerView, binding.root)
-        }
     }
 
     private fun updateEmptyView(recyclerView: RecyclerView, view: View) {
@@ -319,6 +327,12 @@ class HomeFragment() : Fragment(), CoroutineScope {
         }
         binding.calendarViewCropCalendar.setup(startMonth, endMonth, firstDayOfWeek)
         binding.calendarViewCropCalendar.scrollToMonth(currentMonth)
+    }
+
+    private fun insertCropEvent(cropEvent: CropEventDbo) {
+        launch {
+            DatabaseService.getDb().cropEventDao().insertAll(cropEvent)
+        }
     }
 
     fun setMargins(v: View, l: Int, t: Int, r: Int, b: Int) {

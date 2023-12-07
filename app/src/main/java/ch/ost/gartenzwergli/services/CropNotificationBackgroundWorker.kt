@@ -104,5 +104,5 @@ fun scheduleCropNotification(context: Context, cropAndEventDbo: CropEventAndCrop
 fun cancelNotificationForCropEvent(ctx: Context, cropEventDboId: String) {
     val workManager = WorkManager.getInstance(ctx)
     workManager.cancelWorkById(UUID.fromString(cropEventDboId))
-    Log.d("Notification", "Notification for $cropEventDboId canceled")
+    Log.d("Notification", "Notification for $cropEventDboId cancelled")
 }
