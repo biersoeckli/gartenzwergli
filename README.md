@@ -23,17 +23,19 @@ the app and its functionality.
 <table width="100%" style="text-align: center;">
 <tr>
 <td> <img src="assets/screenshot_calendar.png"></td>
+<td> <img src="assets/screenshot_calendar_harvest.png"></td>
 <td> <img src="assets/screenshot_crop_list.png"></td>
 <td> <img src="assets/screenshot_crop_search.png"></td>
 <td> <img src="assets/screenshot_custom_crop.png"></td>
-<td> todo <br>"My Garden" overview</td>
+<td> todo</td>
 </tr>
 <tr>
-<td>Crop Calendar</td>
+<td>Crop calendar</td>
+<td>Crop ready to be harvested</td>
 <td>Crop overview</td>
 <td>Crop search</td>
 <td>Create custom crop</td>
-<td>todo "My Garden" overview</td>
+<td>"My Garden" overview</td>
 </tr>
 </table>
 
