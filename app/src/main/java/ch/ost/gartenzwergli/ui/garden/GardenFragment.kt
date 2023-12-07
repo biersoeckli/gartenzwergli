@@ -81,12 +81,6 @@ class GardenFragment : Fragment() {
         return root
     }
 
-    private fun refreshCropsOnUi() {
-        val crops: MutableList<CropEventAndCrop>?;
-
-
-    }
-
     private fun updateEmptyView(recyclerView: RecyclerView, view: View) {
         val emptyView: TextView = view.findViewById(R.id.emptyGardenTextView)
         if (recyclerView.adapter?.itemCount == 0) {

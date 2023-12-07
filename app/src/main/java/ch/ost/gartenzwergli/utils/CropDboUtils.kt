@@ -10,10 +10,6 @@ class CropDboUtils {
             return ctx.filesDir.absolutePath.plus("/cropImages")
         }
 
-        fun getFullCropImageFilePath(cropDbo: CropDbo, ctx: Context): String {
-            return getCropImagesPath(ctx).plus("/").plus(getCropImageFileName(cropDbo))
-        }
-
         fun getCropImageFileName(cropDbo: CropDbo): String {
             if (cropDbo.thumbnailUrl == null) {
                 throw Exception("ThumbnailUrl of crop is null")
