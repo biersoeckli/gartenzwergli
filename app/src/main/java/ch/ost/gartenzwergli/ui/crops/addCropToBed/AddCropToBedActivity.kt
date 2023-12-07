@@ -99,45 +99,56 @@ class AddCropToBedActivity : AppCompatActivity(), CoroutineScope {
                 val localDateISO = localDate.format(DateTimeFormatter.ISO_DATE)
 
                 var cropEventId = UUID.randomUUID().toString()
-                insertCropEvent(CropEventDbo(
-                    title = cropDbo.name,
-                    description = "Sewed",
-                    dateTime = localDateISO,
-                    plantedTime = localDateISO,
-                    cropId = cropDboId,
-                    id = cropEventId
-                ))
-
-                if (medianDaysForFirstHarvest > 0) {
-                    val firstHarvestLocalDate = localDate.plusDays(medianDaysForFirstHarvest.toLong())
-                    val firstHarvestLocalDateISO = firstHarvestLocalDate.format(DateTimeFormatter.ISO_DATE)
-
-                    // create first harvest event if medianDaysForFirstHarvest is set
-                    cropEventId = UUID.randomUUID().toString()
-                    insertCropEvent(CropEventDbo(
+                var cropEventFirstHarvestId = UUID.randomUUID().toString()
+                var cropEventLastHarvestId = UUID.randomUUID().toString()
+                insertCropEvent(
+                    CropEventDbo(
                         title = cropDbo.name,
-                        description = "First Harvest",
-                        dateTime = firstHarvestLocalDateISO,
+                        description = "Sewed",
+                        dateTime = localDateISO,
                         plantedTime = localDateISO,
                         cropId = cropDboId,
                         id = cropEventId
-                    ))
+                    )
+                )
+
+                if (medianDaysForFirstHarvest > 0) {
+                    val firstHarvestLocalDate =
+                        localDate.plusDays(medianDaysForFirstHarvest.toLong())
+                    val firstHarvestLocalDateISO =
+                        firstHarvestLocalDate.format(DateTimeFormatter.ISO_DATE)
+
+                    // create first harvest event if medianDaysForFirstHarvest is set
+
+                    insertCropEvent(
+                        CropEventDbo(
+                            title = cropDbo.name,
+                            description = "First Harvest",
+                            dateTime = firstHarvestLocalDateISO,
+                            plantedTime = localDateISO,
+                            cropId = cropDboId,
+                            id = cropEventFirstHarvestId
+                        )
+                    )
                 }
 
                 if (medianDaysToLastHarvest > 0) {
                     val lastHarvestLocalDate = localDate.plusDays(medianDaysToLastHarvest.toLong())
-                    val lastHarvestLocalDateISO = lastHarvestLocalDate.format(DateTimeFormatter.ISO_DATE)
+                    val lastHarvestLocalDateISO =
+                        lastHarvestLocalDate.format(DateTimeFormatter.ISO_DATE)
 
                     // create last harvest event if medianDaysToLastHarvest is set
-                    cropEventId = UUID.randomUUID().toString()
-                    insertCropEvent(CropEventDbo(
-                        title = cropDbo.name,
-                        description = "Last Harvest",
-                        dateTime = lastHarvestLocalDateISO,
-                        plantedTime = localDateISO,
-                        cropId = cropDboId,
-                        id = cropEventId
-                    ))
+
+                    insertCropEvent(
+                        CropEventDbo(
+                            title = cropDbo.name,
+                            description = "Last Harvest",
+                            dateTime = lastHarvestLocalDateISO,
+                            plantedTime = localDateISO,
+                            cropId = cropDboId,
+                            id = cropEventLastHarvestId
+                        )
+                    )
                 }
 
 
@@ -145,16 +156,20 @@ class AddCropToBedActivity : AppCompatActivity(), CoroutineScope {
 
                 if (binding.addCropGetNotifiedSwitch.isChecked) {
                     if (binding.addCropReadyToHarvestSwitch.isChecked && medianDaysForFirstHarvest > 0) {
+                        val crop =
+                            DatabaseService.getDb().cropEventDao().getById(cropEventFirstHarvestId)
                         scheduleCropNotification(
                             context = this@AddCropToBedActivity,
-                            DatabaseService.getDb().cropEventDao().getById(cropEventId)
+                            crop
                         )
                     }
 
                     if (binding.addCropLastHarvestSwitch.isChecked && medianDaysToLastHarvest > 0) {
+                        var crop =
+                            DatabaseService.getDb().cropEventDao().getById(cropEventLastHarvestId)
                         scheduleCropNotification(
                             context = this@AddCropToBedActivity,
-                            DatabaseService.getDb().cropEventDao().getById(cropEventId)
+                            crop
                         )
                     }
                 }
@@ -167,9 +182,7 @@ class AddCropToBedActivity : AppCompatActivity(), CoroutineScope {
     }
 
     private fun insertCropEvent(cropEvent: CropEventDbo) {
-        launch {
-            DatabaseService.getDb().cropEventDao().insertAll(cropEvent)
-        }
+        DatabaseService.getDb().cropEventDao().insertAll(cropEvent)
     }
 
 
@@ -240,7 +253,8 @@ class AddCropToBedActivity : AppCompatActivity(), CoroutineScope {
                     monthString = "0${month + 1}"
                 }
                 binding.addCropCalendarText.setText("${dayOfMonthString}.${monthString}.${year}")
-                binding.addCropCropSewDateTextView.text = "Sew date: ${dayOfMonthString}.${monthString}.${year}"
+                binding.addCropCropSewDateTextView.text =
+                    "Sew date: ${dayOfMonthString}.${monthString}.${year}"
 
                 // get text from edit text and convert to java.time LocalDate
                 val dateString = binding.addCropCalendarText.text.toString()
@@ -260,11 +274,16 @@ class AddCropToBedActivity : AppCompatActivity(), CoroutineScope {
     private fun setCropEventInfo(localDate: LocalDate) {
         if (medianDaysForFirstHarvest > 0) {
             binding.addCropCropFirstHarvestDateTextView.text =
-                "Harvest date: ${localDate.plusDays(cropDbo.medianDaysForFirstHarvest!!.toLong()).format(formatter)}"
+                "Harvest date: ${
+                    localDate.plusDays(cropDbo.medianDaysForFirstHarvest!!.toLong())
+                        .format(formatter)
+                }"
         }
         if (medianDaysToLastHarvest > 0) {
             binding.addCropCropLastHarvestDateTextView.text =
-                "Last harvest date: ${localDate.plusDays(cropDbo.medianDaysToLastHarvest!!.toLong()).format(formatter)}"
+                "Last harvest date: ${
+                    localDate.plusDays(cropDbo.medianDaysToLastHarvest!!.toLong()).format(formatter)
+                }"
         }
     }
 

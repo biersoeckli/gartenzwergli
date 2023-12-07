@@ -3,6 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="ch.ost.gartenzwergli.model.dbo.ScrollingActivity">
     <item
+        android:id="@+id/app_info_btn"
+        android:orderInCategory="100"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@android:drawable/ic_menu_info_details"
+        android:title="@string/app_info_text"
+        app:showAsAction="ifRoom|withText" />
+    <item
         android:id="@+id/garden_settings"
         android:orderInCategory="100"
         android:layout_width="wrap_content"

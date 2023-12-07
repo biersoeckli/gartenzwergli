@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.lifecycle.MutableLiveData
 import ch.ost.gartenzwergli.model.dbo.CropDbo
 import ch.ost.gartenzwergli.model.dbo.DUMMY_CROP_ID
 import ch.ost.gartenzwergli.model.dbo.ParameterDbo
@@ -28,6 +29,7 @@ class DataStorage() {
 
     private var okHttpClient: OkHttpClient
     private var db: AppDatabase = DatabaseService.getDb()
+    val onCropSyncState = MutableLiveData<String>()
 
     init {
         val okHttpClient = OkHttpClient()
@@ -215,7 +217,9 @@ class DataStorage() {
         allCropDbos.forEach { cropDbo ->
             if (index % 30 == 0 || index == allCropDbos.size) {
                 Log.d("Crop Sync", "Loading detail data for crop ($index/${allCropDbos.size})")
+
             }
+            onCropSyncState.postValue("$index/${allCropDbos.size}")
             addCropDetailData(cropDbo)
             db.cropDao().updateAll(cropDbo)
             index++

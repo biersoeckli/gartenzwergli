@@ -44,6 +44,11 @@ class GardenFragment : Fragment() {
                     startActivity(cameraActivity)
                     true
                 }
+                R.id.app_info_btn -> {
+                    val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://gartenzwergli-privacy-policy.vercel.app"))
+                    startActivity(browserIntent)
+                    true
+                }
                 else -> {
                     false
                 }

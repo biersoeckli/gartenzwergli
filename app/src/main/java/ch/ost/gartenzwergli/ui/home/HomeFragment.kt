@@ -77,10 +77,16 @@ class HomeFragment() : Fragment(), CoroutineScope {
         super.onCreate(savedInstanceState)
         cropEventsAdapter = CropEventsRecyclerViewAdapter(mutableListOf()) // ititialize empty list
     }
-    fun getEventItemsByDay(date: LocalDate, harvestType: String = "ANY_TYPE_EVENT"): List<CropEventAndCrop> {
-        val harvestItemsFilteredByDate = cropsItems?.filter { it.cropEvent.dateTime == date.format(DateTimeFormatter.ISO_DATE) }
 
-        var harvestItems = harvestItemsFilteredByDate?.filter { it.cropEvent.description == harvestType }
+    fun getEventItemsByDay(
+        date: LocalDate,
+        harvestType: String = "ANY_TYPE_EVENT"
+    ): List<CropEventAndCrop> {
+        val harvestItemsFilteredByDate =
+            cropsItems?.filter { it.cropEvent.dateTime == date.format(DateTimeFormatter.ISO_DATE) }
+
+        var harvestItems =
+            harvestItemsFilteredByDate?.filter { it.cropEvent.description == harvestType }
         if (harvestType == "ANY_TYPE_EVENT") {
             harvestItems = harvestItemsFilteredByDate?.filter {
                 it.cropEvent.description != "Sewed" && it.cropEvent.description != "First Harvest" && it.cropEvent.description != "Last Harvest"
@@ -92,7 +98,8 @@ class HomeFragment() : Fragment(), CoroutineScope {
     fun refreshCropsOnUi(date: LocalDate? = null) {
         gardenViewModel.cropEventAndCrops.observe(viewLifecycleOwner) { cropEvents ->
             cropsItems = cropEvents
-            val filteredCropEvents = cropEvents.filter { it.cropEvent.dateTime == date?.format(DateTimeFormatter.ISO_DATE) }
+            val filteredCropEvents =
+                cropEvents.filter { it.cropEvent.dateTime == date?.format(DateTimeFormatter.ISO_DATE) }
 
             val recyclerView: RecyclerView = binding.calendarEventsRecyclerView
             recyclerView.adapter = CropEventsRecyclerViewAdapter(filteredCropEvents)
@@ -118,6 +125,7 @@ class HomeFragment() : Fragment(), CoroutineScope {
                     selectDate(today)
                     true
                 }
+
                 else -> {
                     false
                 }
@@ -148,7 +156,8 @@ class HomeFragment() : Fragment(), CoroutineScope {
         val daysOfWeek = daysOfWeek()
         gardenViewModel.cropEventAndCrops.observe(viewLifecycleOwner) { cropEvents ->
             cropsItems = cropEvents
-            val filteredCropEvents = cropEvents.filter { it.cropEvent.dateTime == today?.format(DateTimeFormatter.ISO_DATE) }
+            val filteredCropEvents =
+                cropEvents.filter { it.cropEvent.dateTime == today?.format(DateTimeFormatter.ISO_DATE) }
 
             setupMonthCalendar(startMonth, endMonth, currentMonth, daysOfWeek.first())
 
@@ -172,9 +181,7 @@ class HomeFragment() : Fragment(), CoroutineScope {
                 Log.d("HomeFragment", "onSwiped: cropEvent: $cropEvent")
 
                 if (cropEvent != null) {
-                    launch {
-                        gardenViewModel.delete(cropEvent.cropEvent)
-                    }
+                    gardenViewModel.delete(cropEvent.cropEvent)
                     if (cropEvent.crop?.id != DUMMY_CROP_ID) {
                         cancelNotificationForCropEvent(context!!, cropEvent.cropEvent.id)
                     }
@@ -307,11 +314,23 @@ class HomeFragment() : Fragment(), CoroutineScope {
 
                 dotViewCrop.isVisible = getEventItemsByDay(data.date, "Sewed").isNotEmpty()
 
-                dotViewFirstHarvest.background.setTint(ContextCompat.getColor(context!!, R.color.calendar_icon_dark_green))
-                dotViewFirstHarvest.isVisible = getEventItemsByDay(data.date, "First Harvest").isNotEmpty()
+                dotViewFirstHarvest.background.setTint(
+                    ContextCompat.getColor(
+                        context!!,
+                        R.color.calendar_icon_dark_green
+                    )
+                )
+                dotViewFirstHarvest.isVisible =
+                    getEventItemsByDay(data.date, "First Harvest").isNotEmpty()
 
-                dotViewLastHarvest.background.setTint(ContextCompat.getColor(context!!, androidx.appcompat.R.color.error_color_material_dark))
-                dotViewLastHarvest.isVisible = getEventItemsByDay(data.date, "Last Harvest").isNotEmpty()
+                dotViewLastHarvest.background.setTint(
+                    ContextCompat.getColor(
+                        context!!,
+                        androidx.appcompat.R.color.error_color_material_dark
+                    )
+                )
+                dotViewLastHarvest.isVisible =
+                    getEventItemsByDay(data.date, "Last Harvest").isNotEmpty()
 
                 dotViewCustomEvent.isVisible = getEventItemsByDay(data.date).isNotEmpty()
 
