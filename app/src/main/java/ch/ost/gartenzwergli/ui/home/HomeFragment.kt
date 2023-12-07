@@ -1,5 +1,6 @@
 package ch.ost.gartenzwergli.ui.home
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -38,6 +39,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import scheduleCropNotification
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
@@ -170,28 +172,32 @@ class HomeFragment() : Fragment(), CoroutineScope {
                 Log.d("HomeFragment", "onSwiped: cropEvent: $cropEvent")
 
                 if (cropEvent != null) {
-                    DatabaseService.getDb().cropEventDao().delete(cropEvent.cropEvent)
-                    if (cropEvent.cropEvent.id != DUMMY_CROP_ID) {
+                    launch {
+                        gardenViewModel.delete(cropEvent.cropEvent)
+                    }
+                    if (cropEvent.crop?.id != DUMMY_CROP_ID) {
                         cancelNotificationForCropEvent(context!!, cropEvent.cropEvent.id)
                     }
                 }
 
                 cropEventsAdapter?.values?.drop(position)
                 cropEventsAdapter?.notifyItemRemoved(position)
+                recyclerViewCropEvents.scrollToPosition(0)
 
                 val snackbar = Snackbar.make(
                     recyclerViewCropEvents,
                     "Item was removed from the list.",
                     Snackbar.LENGTH_LONG
                 )
-
-                updateEmptyView(recyclerViewCropEvents, binding.root)
-
                 snackbar.setAction("UNDO") {
                     if (cropEvent != null) {
                         cropEvent.cropEvent.id = UUID.randomUUID().toString()
                         cropEventsAdapter?.values?.plus(cropEvent)
                         insertCropEvent(cropEvent.cropEvent)
+
+                        if (cropEvent.crop?.id != DUMMY_CROP_ID) {
+                            scheduleCropNotification(context!!, cropEvent)
+                        }
                     }
                     cropEventsAdapter?.notifyItemInserted(position)
                     recyclerViewCropEvents.scrollToPosition(position)
@@ -199,6 +205,8 @@ class HomeFragment() : Fragment(), CoroutineScope {
                 snackbar.setActionTextColor(Color.YELLOW)
                 snackbar.anchorView = floatingActionButtonNewCropEvent
                 snackbar.show()
+
+                refreshCropsOnUi(selectedDate)
             }
         }
 
@@ -331,7 +339,7 @@ class HomeFragment() : Fragment(), CoroutineScope {
 
     private fun insertCropEvent(cropEvent: CropEventDbo) {
         launch {
-            DatabaseService.getDb().cropEventDao().insertAll(cropEvent)
+            gardenViewModel.insert(cropEvent)
         }
     }
 
