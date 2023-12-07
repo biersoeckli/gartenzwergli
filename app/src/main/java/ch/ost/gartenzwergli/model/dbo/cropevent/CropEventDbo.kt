@@ -11,5 +11,6 @@ data class CropEventDbo(
     var title: String,
     val description: String?,
     val dateTime: String,
+    val plantedTime: String,
     val cropId: String,
 )

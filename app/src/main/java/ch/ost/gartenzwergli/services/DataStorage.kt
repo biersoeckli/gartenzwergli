@@ -67,12 +67,17 @@ class DataStorage() {
                     "Dummy Crop",
                     null,
                     null,
+                    emptyList(),
                     null,
                     null,
                     null,
                     null,
                     null,
-                    null
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
                 )
             )
         }
@@ -151,12 +156,17 @@ class DataStorage() {
                     crop.name,
                     crop.description,
                     crop.slug,
+                    crop.alternate_names,
                     crop.scientific_name,
                     crop.thumbnail_url,
                     null,
                     null,
                     null,
-                    null
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
                 )
             }
 
@@ -226,8 +236,12 @@ class DataStorage() {
                             cropDetailDto.openfarm_data["attributes"] as LinkedTreeMap<*, *>
                         cropDbo.height = attributes["height"] as Double?;
                         cropDbo.spread = attributes["spread"] as Double?;
+                        cropDbo.sowingMethod = attributes["sowing_method"] as String?;
+                        cropDbo.sunRequirements = attributes["sun_requirements"] as String?;
                     }
                     cropDbo.medianDaysForFirstHarvest = cropDetailDto.median_days_to_first_harvest
+                    cropDbo.medianDaysToLastHarvest = cropDetailDto.median_days_to_last_harvest
+                    cropDbo.medianLifespan = cropDetailDto.median_lifespan
                     cropDbo.detailsFetched = true
                 }
             }

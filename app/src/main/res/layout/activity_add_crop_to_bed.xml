@@ -19,30 +19,219 @@
             android:id="@+id/linearLayout2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/cropTitleTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingLeft="24dp"
+                android:paddingTop="24dp"
+                android:paddingRight="24dp"
                 android:paddingBottom="15dp"
-                android:text="CropTitle"
                 android:textSize="34sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                tools:text="Tomato" />
 
             <TextView
-                android:id="@+id/textView3"
-                android:text="Choose a sowing date:"
+                android:id="@+id/sowingDateTitleTextView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:paddingLeft="24dp"
+                android:paddingRight="24dp"
+                android:paddingBottom="16dp"
+                android:text="@string/choose_a_sowing_date" />
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:alpha="0.1"
+                android:background="@android:color/black" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/addCropDateSelector"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:paddingTop="16dp"
+                android:paddingLeft="24dp"
+                android:paddingEnd="24dp"
+                android:paddingBottom="16dp">
+
+                <ImageView
+                    android:id="@+id/addCropCalendarIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="16dp"
+                    app:layout_constraintEnd_toStartOf="@+id/addCropCalendarText"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_calendar_month_black_24dp" />
+
+                <EditText
+                    android:id="@+id/addCropCalendarText"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="16dp"
+                    android:clickable="true"
+                    android:focusable="false"
+                    android:hint="@string/select_date"
+                    android:inputType="none"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/addCropCalendarIcon"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:alpha="0.1"
+                android:background="@android:color/black" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="24dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/layout_addCropBellIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/addCropBellIcon"
+                        android:layout_width="24dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_notifications_black_24dp" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/addCropGetNotifiedSwitch"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="32dp"
+                    android:checked="false"
+                    android:text="@string/get_notified"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/layout_addCropBellIcon"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/addCropReadyToHarvestSwitch"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/ready_to_harvest"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/layout_addCropBellIcon"
+                    app:layout_constraintTop_toBottomOf="@+id/addCropGetNotifiedSwitch" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/addCropLastHarvestSwitch"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/last_harvest"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/layout_addCropBellIcon"
+                    app:layout_constraintTop_toBottomOf="@id/addCropReadyToHarvestSwitch" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:alpha="0.1"
+                android:background="@android:color/black" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="24dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/layout_addCropTimelineIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/addCropTimelineIcon"
+                        android:layout_width="24dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_timeline_black_24dp" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <TextView
+                    android:id="@+id/addCropCropNameTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:layout_marginStart="32dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/layout_addCropTimelineIcon"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Tomato" />
+
+                <TextView
+                    android:id="@+id/addCropCropSewDateTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginTop="24dp"
+                    app:layout_constraintStart_toEndOf="@+id/layout_addCropTimelineIcon"
+                    app:layout_constraintTop_toBottomOf="@id/addCropCropNameTextView"
+                    android:text="@string/please_choose_a_sew_date"
+                    tools:text="Sew Date: 01.01.2023" />
+
+                <TextView
+                    android:id="@+id/addCropCropFirstHarvestDateTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginTop="24dp"
+                    app:layout_constraintStart_toEndOf="@+id/layout_addCropTimelineIcon"
+                    app:layout_constraintTop_toBottomOf="@id/addCropCropSewDateTextView"
+                    tools:text="Ready To Harvest: 02.02.2023" />
+
+                <TextView
+                    android:id="@+id/addCropCropLastHarvestDateTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginTop="24dp"
+                    app:layout_constraintStart_toEndOf="@+id/layout_addCropTimelineIcon"
+                    app:layout_constraintTop_toBottomOf="@id/addCropCropFirstHarvestDateTextView"
+                    tools:text="Last Harvest: 02.02.2023" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:alpha="0.1"
+                android:background="@android:color/black" />
+
+            <!--
             <DatePicker
                 android:id="@+id/cropDatePicker"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:calendarViewShown="false"
-                android:datePickerMode="spinner" />
+                android:datePickerMode="spinner" /> -->
 
         </LinearLayout>
     </ScrollView>

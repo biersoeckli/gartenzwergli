@@ -88,6 +88,7 @@ class NewEventDialog : DialogFragment() {
                             title = binding.newEventPlantText.text.toString(),
                             description = binding.newEventPlantDescription.text.toString(),
                             dateTime = dateFormat,
+                            plantedTime = dateFormat,
                             cropId = DUMMY_CROP_ID
                         )
                     )
@@ -119,11 +120,19 @@ class NewEventDialog : DialogFragment() {
         val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
 
         // create date picker dialog
-        val datePickerDialog: DatePickerDialog = DatePickerDialog(
+        val datePickerDialog = DatePickerDialog(
             requireContext(),
             { view, year, month, dayOfMonth ->
-                // set day of month , month and year value in the edit text
-                binding.newEventCalendarText.setText("" + dayOfMonth + "." + (month + 1) + "." + year)
+                // show leading zero for single digit days
+                var dayOfMonthString = dayOfMonth.toString()
+                if (dayOfMonth < 10) {
+                    dayOfMonthString = "0${dayOfMonth}"
+                }
+                var monthString = (month + 1).toString()
+                if (month < 10) {
+                    monthString = "0${month}"
+                }
+                binding.newEventCalendarText.setText("${dayOfMonthString}.${monthString}.${year}")
             },
             year,
             month,

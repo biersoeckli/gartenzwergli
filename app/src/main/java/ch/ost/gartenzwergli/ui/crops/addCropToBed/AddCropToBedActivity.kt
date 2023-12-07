@@ -1,37 +1,49 @@
 package ch.ost.gartenzwergli.ui.crops.addCropToBed
 
 import android.Manifest
+import android.app.DatePickerDialog
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.widget.Button
-import android.widget.DatePicker
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import ch.ost.gartenzwergli.MainActivity
 import ch.ost.gartenzwergli.R
+import ch.ost.gartenzwergli.databinding.ActivityAddCropToBedBinding
 import ch.ost.gartenzwergli.model.dbo.CropDbo
 import ch.ost.gartenzwergli.model.dbo.cropevent.CropEventDbo
 import ch.ost.gartenzwergli.services.DataStorage
 import ch.ost.gartenzwergli.services.DatabaseService
+import ch.ost.gartenzwergli.ui.crops.titlecase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import scheduleCropNotification
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.Calendar
 import java.util.UUID
 import kotlin.coroutines.CoroutineContext
-
 
 class AddCropToBedActivity : AppCompatActivity(), CoroutineScope {
 
     private lateinit var cropDbo: CropDbo
+    private var medianDaysToLastHarvest: Int = 0
+    private var medianDaysForFirstHarvest: Int = 0
+
+    private var _binding: ActivityAddCropToBedBinding? = null
+
+    private val binding get() = _binding!!
+
+    private val calendar: Calendar = Calendar.getInstance()
+    private val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 
     companion object {
         const val EXTRA_CROP_DBO_ID = "CROP_DBO_ID"
@@ -39,10 +51,19 @@ class AddCropToBedActivity : AppCompatActivity(), CoroutineScope {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_add_crop_to_bed)
+        _binding = ActivityAddCropToBedBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        val localDateFormatted = LocalDate.now().format(formatter)
+        binding.addCropCalendarText.setText(localDateFormatted)
+        binding.addCropCropSewDateTextView.text = "Sew date: ${localDateFormatted}"
+
+        binding.addCropCalendarText.setOnClickListener {
+            showDatePickerDialog(this)
+        }
+
         val actionBar = getSupportActionBar()
         if (actionBar != null) {
-            actionBar.title = "Add Crop To Bed"
             actionBar.setDisplayHomeAsUpEnabled(true)
         }
 
@@ -53,54 +74,101 @@ class AddCropToBedActivity : AppCompatActivity(), CoroutineScope {
             val dataStorage = DataStorage()
             dataStorage.syncDetailCropDboIfNeeded(cropDboId!!)
             cropDbo = DatabaseService.getDb().cropDao().findById(cropDboId)
-            findViewById<TextView>(R.id.cropTitleTextView).setText(cropDbo!!.name)
+
+            medianDaysToLastHarvest = cropDbo.medianDaysToLastHarvest!!
+            medianDaysForFirstHarvest = cropDbo.medianDaysForFirstHarvest!!
+
+            setCropEventInfo(LocalDate.now())
+
+            val cropName = cropDbo.name.titlecase() ?: "Crop"
+            findViewById<TextView>(R.id.cropTitleTextView).text = cropName
+
+            if (actionBar != null) {
+                actionBar.title = "Add ${cropName} to your garden"
+            }
+
+            binding.addCropCropNameTextView.text = cropName
 
             findViewById<Button>(R.id.saveCropEventButton).setOnClickListener {
-                val datePicker = findViewById<DatePicker>(R.id.cropDatePicker)
-                val day: Int = datePicker.dayOfMonth
-                val month: Int = datePicker.month + 1
-                val year: Int = datePicker.year
+                // get text from edit text and convert to java.time LocalDate
+                val dateString = binding.addCropCalendarText.text.toString()
+                val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 
                 // convert to localdate
-                val dateString = LocalDate.of(year, month, day).format(DateTimeFormatter.ISO_DATE)
+                val localDate = LocalDate.parse(dateString, formatter)
+                val localDateISO = localDate.format(DateTimeFormatter.ISO_DATE)
 
-                val cropEventId = UUID.randomUUID().toString()
-                DatabaseService.getDb().cropEventDao().insertAll(
-                    CropEventDbo(
+                var cropEventId = UUID.randomUUID().toString()
+                insertCropEvent(CropEventDbo(
+                    title = cropDbo.name,
+                    description = "Sewed",
+                    dateTime = localDateISO,
+                    plantedTime = localDateISO,
+                    cropId = cropDboId,
+                    id = cropEventId
+                ))
+
+                if (medianDaysForFirstHarvest > 0) {
+                    val firstHarvestLocalDate = localDate.plusDays(medianDaysForFirstHarvest.toLong())
+                    val firstHarvestLocalDateISO = firstHarvestLocalDate.format(DateTimeFormatter.ISO_DATE)
+
+                    // create first harvest event if medianDaysForFirstHarvest is set
+                    cropEventId = UUID.randomUUID().toString()
+                    insertCropEvent(CropEventDbo(
                         title = cropDbo.name,
-                        description = cropDbo.scientificName ?: "",
-                        dateTime = dateString,
+                        description = "First Harvest",
+                        dateTime = firstHarvestLocalDateISO,
+                        plantedTime = localDateISO,
                         cropId = cropDboId,
                         id = cropEventId
-                    )
-                )
+                    ))
+                }
 
-                /*
-                val snackbar = Snackbar.make(
-                    findViewById(R.id.addCropToBedButton),
-                    "Crop Event saved",
-                    Snackbar.LENGTH_LONG
-                )
-                snackbar.show()*/
+                if (medianDaysToLastHarvest > 0) {
+                    val lastHarvestLocalDate = localDate.plusDays(medianDaysToLastHarvest.toLong())
+                    val lastHarvestLocalDateISO = lastHarvestLocalDate.format(DateTimeFormatter.ISO_DATE)
+
+                    // create last harvest event if medianDaysToLastHarvest is set
+                    cropEventId = UUID.randomUUID().toString()
+                    insertCropEvent(CropEventDbo(
+                        title = cropDbo.name,
+                        description = "Last Harvest",
+                        dateTime = lastHarvestLocalDateISO,
+                        plantedTime = localDateISO,
+                        cropId = cropDboId,
+                        id = cropEventId
+                    ))
+                }
+
 
                 createNotificationChannelIfNotExists()
-                scheduleCropNotification(
-                    context = this@AddCropToBedActivity,
-                    DatabaseService.getDb().cropEventDao().getById(cropEventId)
-                )
-                /*
-                if (cropDbo.medianDaysForFirstHarvest != null) {
-                    val service = Executors.newSingleThreadScheduledExecutor()
-                    val handler = Handler(Looper.getMainLooper())
-                    service.schedule({
-                        handler.post {
-                            showNotification(cropDbo)
-                        }
-                    //}, cropDbo.medianDaysForFirstHarvest!!.toLong(), TimeUnit.DAYS)
-                    }, 10, TimeUnit.SECONDS)
-                }*/
+
+                if (binding.addCropGetNotifiedSwitch.isChecked) {
+                    if (binding.addCropReadyToHarvestSwitch.isChecked && medianDaysForFirstHarvest > 0) {
+                        scheduleCropNotification(
+                            context = this@AddCropToBedActivity,
+                            DatabaseService.getDb().cropEventDao().getById(cropEventId)
+                        )
+                    }
+
+                    if (binding.addCropLastHarvestSwitch.isChecked && medianDaysToLastHarvest > 0) {
+                        scheduleCropNotification(
+                            context = this@AddCropToBedActivity,
+                            DatabaseService.getDb().cropEventDao().getById(cropEventId)
+                        )
+                    }
+                }
+
+                val intentToHome = Intent(this@AddCropToBedActivity, MainActivity::class.java)
+                supportNavigateUpTo(intentToHome)
                 finish()
             }
+        }
+    }
+
+    private fun insertCropEvent(cropEvent: CropEventDbo) {
+        launch {
+            DatabaseService.getDb().cropEventDao().insertAll(cropEvent)
         }
     }
 
@@ -108,8 +176,6 @@ class AddCropToBedActivity : AppCompatActivity(), CoroutineScope {
     private val notificationsPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
-
-
     }
 
     private fun ensureNotificationsPermission(): Boolean {
@@ -123,19 +189,15 @@ class AddCropToBedActivity : AppCompatActivity(), CoroutineScope {
         if (granted) return true
 
         if (shouldShowRequestPermissionRationale(permission)) {
-
             notificationsPermissionLauncher.launch(permission)
-
             return false
         }
 
         notificationsPermissionLauncher.launch(permission)
-
         return false
     }
 
     private fun createNotificationChannelIfNotExists() {
-
         ensureNotificationsPermission()
 
         // Create the NotificationChannel, but only on API 26+ because
@@ -156,7 +218,54 @@ class AddCropToBedActivity : AppCompatActivity(), CoroutineScope {
         }
         // Register the channel with the system.
         notificationManager.createNotificationChannel(channel)
+    }
 
+    private fun showDatePickerDialog(context: Context) {
+        // get current date
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
+
+        // create date picker dialog
+        val datePickerDialog = DatePickerDialog(
+            context,
+            { view, year, month, dayOfMonth ->
+                // show leading zero for single digit days
+                var dayOfMonthString = dayOfMonth.toString()
+                if (dayOfMonth < 10) {
+                    dayOfMonthString = "0${dayOfMonth}"
+                }
+                var monthString = (month + 1).toString()
+                if ((month + 1) < 10) {
+                    monthString = "0${month + 1}"
+                }
+                binding.addCropCalendarText.setText("${dayOfMonthString}.${monthString}.${year}")
+                binding.addCropCropSewDateTextView.text = "Sew date: ${dayOfMonthString}.${monthString}.${year}"
+
+                // get text from edit text and convert to java.time LocalDate
+                val dateString = binding.addCropCalendarText.text.toString()
+
+                // convert to localdate
+                val localDate = LocalDate.parse(dateString, formatter)
+                setCropEventInfo(localDate)
+            },
+            year,
+            month,
+            dayOfMonth
+        )
+
+        datePickerDialog.show()
+    }
+
+    private fun setCropEventInfo(localDate: LocalDate) {
+        if (medianDaysForFirstHarvest > 0) {
+            binding.addCropCropFirstHarvestDateTextView.text =
+                "Harvest date: ${localDate.plusDays(cropDbo.medianDaysForFirstHarvest!!.toLong()).format(formatter)}"
+        }
+        if (medianDaysToLastHarvest > 0) {
+            binding.addCropCropLastHarvestDateTextView.text =
+                "Last harvest date: ${localDate.plusDays(cropDbo.medianDaysToLastHarvest!!.toLong()).format(formatter)}"
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {

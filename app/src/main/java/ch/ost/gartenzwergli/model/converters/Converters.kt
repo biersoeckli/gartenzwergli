@@ -4,13 +4,14 @@ import androidx.room.TypeConverter
 import java.util.Date
 
 class Converters {
-    @TypeConverter
-    fun fromTimestamp(value: Long?): Date? {
-        return value?.let { Date(it) }
+
+    companion object {
+        const val STRING_SEPARATOR = "||"
     }
 
     @TypeConverter
-    fun dateToTimestamp(date: Date?): Long? {
-        return date?.time
-    }
+    fun List<String>.toStringData() = this.joinToString(STRING_SEPARATOR)
+
+    @TypeConverter
+    fun String.toStringList() = this.split(STRING_SEPARATOR)
 }

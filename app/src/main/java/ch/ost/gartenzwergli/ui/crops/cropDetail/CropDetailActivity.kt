@@ -53,11 +53,45 @@ class CropDetailActivity() : AppCompatActivity(), CoroutineScope {
                 actionBar.title = cropName
             }
 
-            findViewById<TextView>(R.id.cropDescriptionTextView).setText(cropDbo!!.description)
+            var scientificName = ""
+            if (cropDbo!!.scientificName != null)
+                scientificName = cropDbo!!.scientificName!!
+            findViewById<TextView>(R.id.cropSubtitleScientificNameTextView).text = scientificName
 
+            var alternateNames = ""
+            if (cropDbo!!.alternateNames != null)
+                alternateNames = cropDbo!!.alternateNames!!.joinToString(", ")
+            findViewById<TextView>(R.id.cropSubtitleAlternateNamesTextView).text = alternateNames
+
+            var description = "-"
+            if (cropDbo!!.description != null)
+                description = cropDbo!!.description!!
+            findViewById<TextView>(R.id.cropDescriptionTextView).text = description
+
+            var medianDaysForFirstHarvest = "-"
             if (cropDbo!!.medianDaysForFirstHarvest != null)
-                findViewById<TextView>(R.id.medianDaysForFirstHarvestTextView)
-                    .setText(cropDbo!!.medianDaysForFirstHarvest!!.toString() + " days unitl harvest")
+                medianDaysForFirstHarvest = cropDbo!!.medianDaysForFirstHarvest!!.toString() + " days until harvest"
+            findViewById<TextView>(R.id.medianDaysForFirstHarvestTextView).text = medianDaysForFirstHarvest
+
+            var medianDaysToLastHarvest = "-"
+            if (cropDbo!!.medianDaysToLastHarvest != null)
+                medianDaysToLastHarvest = cropDbo!!.medianDaysToLastHarvest!!.toString() + " days until last harvest"
+            findViewById<TextView>(R.id.medianDaysToLastHarvestTextView).text = medianDaysToLastHarvest
+
+            var medianLifespan = "-"
+            if (cropDbo!!.medianLifespan != null)
+                medianLifespan = cropDbo!!.medianLifespan!!.toString() + " days"
+            findViewById<TextView>(R.id.medianLifespanTextView).text = medianLifespan
+
+            var sowingMethod = "-"
+            if (cropDbo!!.sowingMethod != null)
+                sowingMethod = cropDbo!!.sowingMethod!!
+            findViewById<TextView>(R.id.sowingMethodTextView).text = sowingMethod
+
+            var sunRequirements = "-"
+            if (cropDbo!!.sunRequirements != null)
+                sunRequirements = cropDbo!!.sunRequirements!!
+            findViewById<TextView>(R.id.sunRequirementsTextView).text = sunRequirements
 
             if (cropDbo!!.thumnailPath != null) {
                 val imgFile = File(cropDbo!!.thumnailPath!!);

@@ -61,7 +61,6 @@ class GardenCameraPreviewActivity : AppCompatActivity(), CoroutineScope {
         }
 
         val intent = Intent(this, MainActivity::class.java)
-        intent.putExtra("openFragment", "GardenFragment")
         supportNavigateUpTo(intent)
         finish()
     }

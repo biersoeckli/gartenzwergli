@@ -16,7 +16,8 @@
         android:layout_height="match_parent"
         app:layoutManager="LinearLayoutManager"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:listitem="@layout/plant_item" />
+        android:paddingBottom="88dp"
+        tools:listitem="@layout/garden_crop_item" />
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/gardenAppBarLayout"
@@ -44,7 +45,7 @@
                 android:adjustViewBounds="true"
                 android:fitsSystemWindows="true"
                 android:scaleType="centerCrop"
-                android:contentDescription="Image of your garden" />
+                android:contentDescription="@string/image_of_your_garden" />
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/gardenToolbar"
@@ -53,33 +54,12 @@
                 app:layout_collapseMode="pin"
                 app:popupTheme="@style/Theme.Gartenzwergli.PopupOverlay" />
 
-
-            <!--
-            <LinearLayout
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"
-                android:orientation="horizontal"
-                android:padding="14dp">
-
-                <TextView
-                    android:ellipsize="marquee"
-                    android:fontFamily="sans-serif-light"
-                    android:id="@+id/gardenTitleTextView"
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    android:singleLine="true"
-                    android:textColor="#FFFFFF"
-                    android:textSize="32sp"
-                    android:text="Garden" />
-
-            </LinearLayout>
-            -->
-
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
     <TextView
-        android:id="@+id/emptyViewText"
+        android:id="@+id/emptyGardenTextView"
+        android:layout_margin="40dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -88,7 +68,7 @@
         android:textSize="24sp"
         android:visibility="gone"
         app:drawableTint="?attr/colorAccent"
-        app:drawableTopCompat="@drawable/round_event_busy_24dp"
+        app:drawableTopCompat="@drawable/ic_agriculture_black_24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

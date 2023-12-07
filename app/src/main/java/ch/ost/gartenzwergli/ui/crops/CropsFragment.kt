@@ -35,6 +35,7 @@ import kotlin.coroutines.CoroutineContext
 class CropsFragment : Fragment(), CoroutineScope {
 
     private var columnCount = 1
+    private var searchBarText = "Search Crops"
 
     private var _binding: FragmentCropsBinding? = null
     private val binding get() = _binding!!
@@ -43,6 +44,7 @@ class CropsFragment : Fragment(), CoroutineScope {
         super.onCreate(savedInstanceState)
         arguments?.let {
             columnCount = it.getInt(ARG_COLUMN_COUNT)
+            searchBarText = it.getString(SEARCH_BAR_TEXT).toString()
         }
     }
 
@@ -61,6 +63,8 @@ class CropsFragment : Fragment(), CoroutineScope {
         val cropsSearchView: SearchView = binding.searchCropsView
 
         cropsSearchView.setupWithSearchBar(cropsSearchBar)
+
+        cropsSearchBar.hint = searchBarText
 
         with(baseCropsRecyclerView) {
             layoutManager = when {
@@ -113,13 +117,15 @@ class CropsFragment : Fragment(), CoroutineScope {
 
         // TODO: Customize parameter argument names
         const val ARG_COLUMN_COUNT = "column-count"
+        const val SEARCH_BAR_TEXT = "Search Crops"
 
         // TODO: Customize parameter initialization
         @JvmStatic
-        fun newInstance(columnCount: Int) =
+        fun newInstance(searchBarText: String, columnCount: Int) =
             CropsFragment().apply {
                 arguments = Bundle().apply {
                     putInt(ARG_COLUMN_COUNT, columnCount)
+                    putString(SEARCH_BAR_TEXT, searchBarText)
                 }
             }
     }

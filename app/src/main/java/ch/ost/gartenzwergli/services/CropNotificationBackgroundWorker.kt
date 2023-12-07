@@ -30,17 +30,23 @@ class CropNotificationBackgroundWorker(appContext: Context, workerParams: Worker
 
     private fun showNotification() {
         val cropName = this.inputData.getString("cropName")
+        val cropDescription = this.inputData.getString("cropDescription")
 
         val notificationId = Math.random().toInt()
 
         // Erstelle eine Instanz von NotificationManagerCompat
         val notificationManager = NotificationManagerCompat.from(applicationContext)
 
+        var contentText = "Your $cropName is ready to harvest!"
+        if (cropDescription.equals("Last Harvest")) {
+            contentText = "Your $cropName is ready to harvest a last time!"
+        }
+
         // Erstelle eine Instanz von NotificationCompat.Builder
         val notificationBuilder = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_calendar_month_black_24dp)
             .setContentTitle("Harvest your $cropName!")
-            .setContentText("Your Plant \"$cropName\" is happy and ready to be harvested!")
+            .setContentText(contentText)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
 
@@ -57,7 +63,7 @@ class CropNotificationBackgroundWorker(appContext: Context, workerParams: Worker
         )
 
         // Füge die Aktionen hinzu
-        notificationBuilder.addAction(R.drawable.ic_launcher_foreground, "open", pendingIntent)
+        notificationBuilder.addAction(R.mipmap.ic_launcher_round, "open", pendingIntent)
 
         // Zeige die Benachrichtigung an
         if (ActivityCompat.checkSelfPermission(
@@ -73,10 +79,8 @@ class CropNotificationBackgroundWorker(appContext: Context, workerParams: Worker
 
 fun scheduleCropNotification(context: Context, cropAndEventDbo: CropEventAndCrop) {
     val workManager = WorkManager.getInstance(context)
-    if (cropAndEventDbo.crop?.medianDaysForFirstHarvest == null) return
 
-    val seedDateLocalDate = LocalDate.parse(cropAndEventDbo.cropEvent.dateTime, DateTimeFormatter.ISO_DATE)
-    val notificationDate = seedDateLocalDate.plusDays(cropAndEventDbo.crop.medianDaysForFirstHarvest!!.toLong())
+    val notificationDate = LocalDate.parse(cropAndEventDbo.cropEvent.dateTime, DateTimeFormatter.ISO_DATE)
     val daysBetweenNowAndNotificationDate = LocalDate.now().until(notificationDate).days
 
     val constraints = Constraints.Builder()
@@ -85,6 +89,7 @@ fun scheduleCropNotification(context: Context, cropAndEventDbo: CropEventAndCrop
 
     val data = Data.Builder()
     data.putString("cropName", cropAndEventDbo.cropEvent.title)
+    data.putString("cropDescription", cropAndEventDbo.cropEvent.description)
 
     val notificationWorkRequest = OneTimeWorkRequestBuilder<CropNotificationBackgroundWorker>()
         .setConstraints(constraints)
@@ -93,7 +98,7 @@ fun scheduleCropNotification(context: Context, cropAndEventDbo: CropEventAndCrop
         .setInitialDelay(daysBetweenNowAndNotificationDate.toLong(), TimeUnit.DAYS)
         .build()
     workManager.enqueue(notificationWorkRequest)
-    Log.d("Notification", "Notification for ${cropAndEventDbo.cropEvent.id} scheduled in ${cropAndEventDbo.crop.medianDaysForFirstHarvest} days")
+    Log.d("Notification", "Notification for ${cropAndEventDbo.cropEvent.id} scheduled in ${daysBetweenNowAndNotificationDate} days")
 }
 
 fun cancelNotificationForCropEvent(ctx: Context, cropEventDboId: String) {

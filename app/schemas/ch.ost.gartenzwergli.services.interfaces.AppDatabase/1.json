@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "f306c899a1527f4fdb0f8229cb32b79d",
+    "identityHash": "5b641d57935abbe8fda455d5ae610385",
     "entities": [
       {
         "tableName": "crop",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `externalId` INTEGER NOT NULL, `name` TEXT NOT NULL, `description` TEXT, `slug` TEXT, `scientificName` TEXT, `thumbnailUrl` TEXT, `thumnailPath` TEXT, `height` REAL, `spread` REAL, `medianDaysForFirstHarvest` INTEGER, `detailsFetched` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `externalId` INTEGER NOT NULL, `name` TEXT NOT NULL, `description` TEXT, `slug` TEXT, `alternateNames` TEXT NOT NULL, `scientificName` TEXT, `thumbnailUrl` TEXT, `thumnailPath` TEXT, `height` REAL, `spread` REAL, `medianDaysForFirstHarvest` INTEGER, `medianDaysToLastHarvest` INTEGER, `medianLifespan` INTEGER, `sowingMethod` TEXT, `sunRequirements` TEXT, `detailsFetched` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -37,6 +37,12 @@
             "columnName": "slug",
             "affinity": "TEXT",
             "notNull": false
+          },
+          {
+            "fieldPath": "alternateNames",
+            "columnName": "alternateNames",
+            "affinity": "TEXT",
+            "notNull": true
           },
           {
             "fieldPath": "scientificName",
@@ -72,6 +78,30 @@
             "fieldPath": "medianDaysForFirstHarvest",
             "columnName": "medianDaysForFirstHarvest",
             "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "medianDaysToLastHarvest",
+            "columnName": "medianDaysToLastHarvest",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "medianLifespan",
+            "columnName": "medianLifespan",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "sowingMethod",
+            "columnName": "sowingMethod",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "sunRequirements",
+            "columnName": "sunRequirements",
+            "affinity": "TEXT",
             "notNull": false
           },
           {
@@ -128,7 +158,7 @@
       },
       {
         "tableName": "crop_event",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `title` TEXT NOT NULL, `description` TEXT, `dateTime` TEXT NOT NULL, `cropId` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `title` TEXT NOT NULL, `description` TEXT, `dateTime` TEXT NOT NULL, `plantedTime` TEXT NOT NULL, `cropId` TEXT NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -155,6 +185,12 @@
             "notNull": true
           },
           {
+            "fieldPath": "plantedTime",
+            "columnName": "plantedTime",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
             "fieldPath": "cropId",
             "columnName": "cropId",
             "affinity": "TEXT",
@@ -174,7 +210,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f306c899a1527f4fdb0f8229cb32b79d')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5b641d57935abbe8fda455d5ae610385')"
     ]
   }
 }

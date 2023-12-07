@@ -41,7 +41,7 @@ class CropsRecyclerViewAdapter(
         if (item.thumnailPath != null) {
             val imgFile = File(item.thumnailPath!!);
             if (imgFile.exists()) {
-                val bmp = BitmapFactory.decodeFile(imgFile.absolutePath);
+                val bmp = BitmapFactory.decodeFile(imgFile.absolutePath)
                 holder.thumbnailImageView.setImageBitmap(bmp)
             }
         }

@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="70dp"
-        app:layout_constraintBottom_toTopOf="@+id/saveCropEventButton"
+        app:layout_constraintBottom_toTopOf="@+id/addCropToBedButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -24,8 +24,12 @@
             <ImageView
                 android:id="@+id/cropImageView"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:scaleType="centerCrop" />
+                android:layout_height="220dp"
+                android:contentDescription="@string/image_of_the_crop"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_local_florist_black_24dp"
+                android:background="@color/cardview_dark_background"
+                />
 
             <TextView
                 android:id="@+id/cropTitleTextView"
@@ -34,9 +38,45 @@
                 android:paddingStart="15dp"
                 android:paddingTop="15dp"
                 android:paddingEnd="15dp"
-                android:text="CropTitle"
-                android:textSize="34sp"
-                android:textStyle="bold" />
+                android:textSize="24sp"
+                android:textStyle="bold"
+                tools:text="Tomato" />
+
+            <TextView
+                android:id="@+id/cropSubtitleScientificNameTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="2dp"
+                android:fontFamily="serif"
+                android:textSize="14sp"
+                android:textStyle="italic"
+                android:typeface="serif"
+                tools:text="Solanum lycopersicum" />
+
+            <TextView
+                android:id="@+id/cropSubtitleAlternateNamesTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="2dp"
+                android:fontFamily="sans-serif-light"
+                android:textSize="14sp"
+                android:typeface="normal"
+                tools:text="Pomodoro" />
+
+            <TextView
+                android:id="@+id/cropDescriptionTitleTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawablePadding="10dp"
+                android:paddingStart="15dp"
+                android:paddingTop="15dp"
+                android:paddingEnd="15dp"
+                android:text="@string/description"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:drawableLeftCompat="@drawable/ic_edit_black_24dp" />
 
             <TextView
                 android:id="@+id/cropDescriptionTextView"
@@ -45,7 +85,20 @@
                 android:paddingStart="15dp"
                 android:paddingTop="15dp"
                 android:paddingEnd="15dp"
-                android:text="TextView" />
+                tools:text="Test" />
+
+            <TextView
+                android:id="@+id/medianDaysForFirstHarvestTitleTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawablePadding="10dp"
+                android:paddingStart="15dp"
+                android:paddingTop="20dp"
+                android:paddingEnd="15dp"
+                android:text="@string/first_harvest"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:drawableLeftCompat="@drawable/ic_auto_awesome_black_24" />
 
             <TextView
                 android:id="@+id/medianDaysForFirstHarvestTextView"
@@ -53,8 +106,96 @@
                 android:layout_height="wrap_content"
                 android:paddingStart="15dp"
                 android:paddingTop="15dp"
-                android:paddingEnd="15dp" />
+                android:paddingEnd="15dp"
+                tools:text="in 300 days" />
 
+            <TextView
+                android:id="@+id/medianDaysToLastHarvestTitleTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawablePadding="10dp"
+                android:paddingStart="15dp"
+                android:paddingTop="20dp"
+                android:paddingEnd="15dp"
+                android:text="@string/last_harvest"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:drawableLeftCompat="@drawable/ic_hourglass_bottom_black_24dp" />
+
+            <TextView
+                android:id="@+id/medianDaysToLastHarvestTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="15dp"
+                android:paddingTop="15dp"
+                android:paddingEnd="15dp"
+                tools:text="in 300 days" />
+
+            <TextView
+                android:id="@+id/medianLifespanTitleTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawablePadding="10dp"
+                android:paddingStart="15dp"
+                android:paddingTop="20dp"
+                android:paddingEnd="15dp"
+                android:text="@string/median_lifespan"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:drawableLeftCompat="@drawable/ic_local_florist_black_24dp" />
+
+            <TextView
+                android:id="@+id/medianLifespanTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="15dp"
+                android:paddingTop="15dp"
+                android:paddingEnd="15dp"
+                tools:text="500 days" />
+
+            <TextView
+                android:id="@+id/sowingMethodTitleTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawablePadding="10dp"
+                android:paddingStart="15dp"
+                android:paddingTop="20dp"
+                android:paddingEnd="15dp"
+                android:text="@string/sowing_method"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:drawableLeftCompat="@drawable/ic_agriculture_black_24dp" />
+
+            <TextView
+                android:id="@+id/sowingMethodTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="15dp"
+                android:paddingTop="15dp"
+                android:paddingEnd="15dp"
+                tools:text="Direct seed outdoors, thin to 20cm when seedlings are 3cm tall" />
+
+            <TextView
+                android:id="@+id/sunRequirementsTitleTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawablePadding="10dp"
+                android:paddingStart="15dp"
+                android:paddingTop="20dp"
+                android:paddingEnd="15dp"
+                android:text="@string/sun_requirements"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:drawableLeftCompat="@drawable/ic_wb_sunny_black_24dp" />
+
+            <TextView
+                android:id="@+id/sunRequirementsTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="15dp"
+                android:paddingTop="15dp"
+                android:paddingEnd="15dp"
+                tools:text="Direct seed outdoors, thin to 20cm when seedlings are 3cm tall" />
         </LinearLayout>
     </ScrollView>
 
@@ -63,7 +204,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:text="Add to Gärtli"
+        android:text="@string/add_to_gaertli"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

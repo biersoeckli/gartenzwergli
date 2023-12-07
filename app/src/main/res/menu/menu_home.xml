@@ -3,11 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="ch.ost.gartenzwergli.model.dbo.ScrollingActivity">
     <item
-        android:id="@+id/garden_settings"
+        android:id="@+id/today_menu_item"
         android:orderInCategory="100"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:icon="@drawable/ic_camera_white_24dp"
-        android:title="@string/take_photo"
+        android:icon="@drawable/ic_today_white_24dp"
+        android:title="@string/today"
         app:showAsAction="ifRoom|withText" />
 </menu>

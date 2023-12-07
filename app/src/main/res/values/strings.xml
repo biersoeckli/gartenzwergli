@@ -1,26 +1,50 @@
 <resources>
     <string name="app_name">Gartenzwergli</string>
+
+    <!-- Preferences -->
+    <string name="preference_file_key">ch.ost.gartenzwergli.GARTENZWERGLI_PREFERENCE_FILE</string>
+    <string name="garden_background_image_key">GARDEN_BACKGROUND_IMAGE_KEY</string>
+
+    <!-- Notifications -->
     <string name="default_notification_channel_name">Crop Updates</string>
+
+    <!-- Titles -->
     <string name="title_home">Home</string>
     <string name="title_crops">Crops</string>
     <string name="title_garden">My Garden</string>
+    <string name="title_activity_scrolling">ScrollingActivity</string>
+    <string name="title_activity_garden_camera">GardenCameraActivity</string>
+
+    <!-- Home -->
     <string name="my_crop_calendar">My Crop Calendar</string>
     <string name="today">Today</string>
     <string name="crop_event_description">Crop Event</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="empty_events_view_text">No events for today</string>
+
+    <!-- Crop Detail -->
+    <string name="image_of_the_crop">Image of the crop</string>
+    <string name="description">Description</string>
+    <string name="first_harvest">First Harvest</string>
+    <string name="last_harvest">Last Harvest</string>
+    <string name="median_lifespan">Median Lifespan</string>
+    <string name="sowing_method">Sowing Method</string>
+    <string name="sun_requirements">Sun Requirements</string>
+    <string name="add_to_gaertli">Add to Gärtli</string>
+
     <string name="save">save</string>
     <string name="search_crops_hint">Search Crops</string>
-    <string name="empty_view_text">Your garden is empty</string>
-    <string name="empty_events_view_text">No events found</string>
+    <string name="empty_view_text">Your garden looks empty… Add some crops</string>
     <string name="select_date">Select Date</string>
-    <string name="title_activity_scrolling">ScrollingActivity</string>
-
-    <string name="action_settings">Settings</string>
-    <string name="title_activity_garden_camera">GardenCameraActivity</string>
-
     <string name="take_photo">Take Photo</string>
 
-    <string name="preference_file_key">ch.ost.gartenzwergli.GARTENZWERGLI_PREFERENCE_FILE</string>
-    <string name="garden_background_image_key">GARDEN_BACKGROUND_IMAGE_KEY</string>
+    <string name="select_crop_title">Select Crop</string>
+    <string name="crop_in_your_garden">Crop in your garden</string>
+    <string name="learn_more">Learn more</string>
+    <string name="choose_a_sowing_date">Choose a sowing date:</string>
+    <string name="description_optional">Description (optional)</string>
+    <string name="ready_to_harvest">Ready to harvest</string>
+    <string name="get_notified">Get notified</string>
+    <string name="please_choose_a_sew_date">Please choose a sew date</string>
+    <string name="search_box_text_selection">Search and select a crop to add</string>
+    <string name="image_of_your_garden">Image of your garden</string>
 </resources>

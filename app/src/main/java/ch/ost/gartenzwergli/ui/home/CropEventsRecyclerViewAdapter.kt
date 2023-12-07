@@ -8,10 +8,15 @@ import android.widget.ImageView
 import android.widget.TextView
 import ch.ost.gartenzwergli.databinding.CropEventItemBinding
 import ch.ost.gartenzwergli.model.dbo.cropevent.CropEventAndCrop
+import ch.ost.gartenzwergli.ui.crops.titlecase
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class CropEventsRecyclerViewAdapter(
-    var values: MutableList<CropEventAndCrop>
+    var values: List<CropEventAndCrop>
 ) : RecyclerView.Adapter<CropEventsRecyclerViewAdapter.ViewHolder>() {
+
+    private val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
@@ -25,9 +30,9 @@ class CropEventsRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = values[position]
-        holder.textViewEvent.text = item.cropEvent.title
+        holder.textViewEvent.text = item.cropEvent.title.titlecase()
         holder.textViewCropName.text = item.cropEvent?.description ?: ""
-        holder.textViewEventTime.text = "Planted: ${item.cropEvent.dateTime.toString()}"
+        holder.textViewEventTime.text = "Planted: ${LocalDate.parse(item.cropEvent.plantedTime).format(formatter)}"
 
         if (item.crop?.thumnailPath != null) {
             val imgFile = item.crop.thumnailPath
@@ -43,7 +48,6 @@ class CropEventsRecyclerViewAdapter(
     override fun getItemCount(): Int = values.size
 
     inner class ViewHolder(binding: CropEventItemBinding) : RecyclerView.ViewHolder(binding.root) {
-
         val textViewEvent: TextView = binding.textViewEvent
         val textViewCropName: TextView = binding.textViewCropName
         val textViewEventTime: TextView = binding.textViewEventTime

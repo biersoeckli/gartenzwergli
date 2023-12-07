@@ -8,6 +8,7 @@ import androidx.room.Transaction
 import androidx.room.Update
 import ch.ost.gartenzwergli.model.dbo.cropevent.CropEventAndCrop
 import ch.ost.gartenzwergli.model.dbo.cropevent.CropEventDbo
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CropEventDao {
@@ -16,7 +17,7 @@ interface CropEventDao {
     fun getAll(): List<CropEventDbo>
 
     @Query("SELECT * FROM crop_event")
-    fun getAllCropEventAndCrops(): List<CropEventAndCrop>
+    fun getAllCropEventAndCrops(): Flow<List<CropEventAndCrop>>
 
     @Query("SELECT * FROM crop_event WHERE id = :id")
     fun getById(id: String): CropEventAndCrop

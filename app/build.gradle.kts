@@ -96,6 +96,7 @@ dependencies {
 
     implementation("androidx.room:room-runtime:$room_version")
     ksp("androidx.room:room-compiler:$room_version")
+    implementation ("androidx.room:room-ktx:$room_version")
 
     var camerax_version = "1.2.2"
     implementation("androidx.camera:camera-core:${camerax_version}")
