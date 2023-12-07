@@ -22,12 +22,12 @@ the app and its functionality.
 
 <table width="100%" style="text-align: center;">
 <tr>
-<td> <img src="assets/screenshot_calendar.png"></td>
-<td> <img src="assets/screenshot_calendar_harvest.png"></td>
-<td> <img src="assets/screenshot_crop_list.png"></td>
-<td> <img src="assets/screenshot_crop_search.png"></td>
-<td> <img src="assets/screenshot_custom_crop.png"></td>
-<td> <img src="assets/screenshot_my_garden.png"></td>
+<td width="16%"> <img src="assets/screenshot_calendar.png"></td>
+<td width="16%"> <img src="assets/screenshot_calendar_harvest.png"></td>
+<td width="16%"> <img src="assets/screenshot_crop_list.png"></td>
+<td width="16%"> <img src="assets/screenshot_crop_search.png"></td>
+<td width="16%"> <img src="assets/screenshot_custom_crop.png"></td>
+<td width="16%"> <img src="assets/screenshot_my_garden.png"></td>
 </tr>
 <tr>
 <td>Crop calendar</td>
