@@ -40,8 +40,6 @@ class CropEventsRecyclerViewAdapter(
                 val bmp = BitmapFactory.decodeFile(imgFile);
                 holder.imageViewEvent.setImageBitmap(bmp)
             }
-        } else {
-            holder.imageViewEvent.visibility = ImageView.GONE
         }
     }
 
