@@ -57,9 +57,6 @@ class GardenFragment : Fragment() {
 
         val gardenBackgroundImage = sharedPref?.getString(getString(R.string.garden_background_image_key), null)
 
-        Log.d(TAG, "sharedPref: ${sharedPref.toString()}")
-        Log.d(TAG, "gardenBackgroundImage: $gardenBackgroundImage")
-
         if (gardenBackgroundImage != null) {
             val gardenBackgroundImageUri = Uri.parse(gardenBackgroundImage)
             try {

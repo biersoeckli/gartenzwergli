@@ -145,62 +145,6 @@
             android:alpha="0.1"
             android:background="@android:color/black" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="24dp"
-            android:visibility="invisible">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/layout_newEventBellIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <ImageView
-                    android:id="@+id/newEventBellIcon"
-                    android:layout_width="24dp"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_notifications_black_24dp" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <Switch
-                android:id="@+id/newEventGetNotifiedSwitch"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
-                android:text="Get notified"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/layout_newEventBellIcon"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <Switch
-                android:id="@+id/newEventFullyGrownSwitch"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
-                android:layout_marginTop="24dp"
-                android:text="Fully grown"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/layout_newEventBellIcon"
-                app:layout_constraintTop_toBottomOf="@+id/newEventGetNotifiedSwitch" />
-
-            <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/newEventReadyToHarvestSwitch"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginStart="32dp"
-                android:layout_marginTop="24dp"
-                android:text="Ready to harvest"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/layout_newEventBellIcon"
-                app:layout_constraintTop_toBottomOf="@id/newEventFullyGrownSwitch" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
         <View
             android:id="@+id/view8"
             android:layout_width="match_parent"

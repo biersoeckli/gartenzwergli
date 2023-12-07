@@ -122,13 +122,17 @@ class HomeFragment() : Fragment(), CoroutineScope {
         val floatingActionButtonNewCropEvent: FloatingActionButton =
             binding.floatingActionButtonNewCropEvent
         floatingActionButtonNewCropEvent.setOnClickListener {
-            val dialogFragment = NewEventDialog()
+            if (selectedDate == null) {
+                selectedDate = today
+            }
+            val dialogFragment = selectedDate?.format(DateTimeFormatter.ISO_DATE)
+                ?.let { it1 -> NewEventDialog.newInstance(it1) }
 
-            dialogFragment.onSuccessfullySavedAction.observe(viewLifecycleOwner) {
+            dialogFragment?.onSuccessfullySavedAction?.observe(viewLifecycleOwner) {
                 //loadCropsItems()
                 //refreshCropsOnUi()
             }
-            dialogFragment.show(
+            dialogFragment?.show(
                 childFragmentManager, null
             )
         }

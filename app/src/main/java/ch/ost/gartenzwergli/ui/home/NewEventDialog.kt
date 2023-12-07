@@ -16,6 +16,8 @@ import ch.ost.gartenzwergli.databinding.FragmentNewEventDialogBinding
 import ch.ost.gartenzwergli.model.dbo.DUMMY_CROP_ID
 import ch.ost.gartenzwergli.model.dbo.cropevent.CropEventDbo
 import ch.ost.gartenzwergli.services.DatabaseService
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 
 
@@ -32,7 +34,7 @@ class NewEventDialog : DialogFragment() {
 
     private val binding get() = _binding!!
 
-    private val calendar: Calendar = Calendar.getInstance()
+    private var currentDate = LocalDate.now()
     private val dateFormat = "dd.MM.yyyy"
     private val simpleDateFormat = java.text.SimpleDateFormat(dateFormat, java.util.Locale.GERMANY)
 
@@ -44,6 +46,9 @@ class NewEventDialog : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        arguments?.let {
+            currentDate = LocalDate.parse(it.getString(ARG_CURRENT_DATE), DateTimeFormatter.ISO_DATE)
+        }
         setStyle(STYLE_NORMAL, R.style.Theme_FullScreenDialog)
     }
 
@@ -58,7 +63,7 @@ class NewEventDialog : DialogFragment() {
         toolbar = root.findViewById(R.id.toolbar)
 
         binding.newEventCalendarText.text = Editable.Factory
-            .getInstance().newEditable(simpleDateFormat.format(calendar.time))
+            .getInstance().newEditable(currentDate.format(DateTimeFormatter.ofPattern(dateFormat)))
         binding.newEventCalendarText.setOnClickListener {
             showDatePickerDialog()
         }
@@ -115,9 +120,9 @@ class NewEventDialog : DialogFragment() {
 
     private fun showDatePickerDialog() {
         // get current date
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
+        val year = currentDate.year
+        val month = currentDate.monthValue - 1
+        val dayOfMonth = currentDate.dayOfMonth
 
         // create date picker dialog
         val datePickerDialog = DatePickerDialog(
@@ -128,7 +133,7 @@ class NewEventDialog : DialogFragment() {
                 if (dayOfMonth < 10) {
                     dayOfMonthString = "0${dayOfMonth}"
                 }
-                var monthString = (month + 1).toString()
+                var monthString = (month).toString()
                 if (month < 10) {
                     monthString = "0${month}"
                 }
@@ -140,6 +145,19 @@ class NewEventDialog : DialogFragment() {
         )
 
         datePickerDialog.show()
+    }
+
+    companion object {
+
+        const val ARG_CURRENT_DATE = "current-date"
+
+        @JvmStatic
+        fun newInstance(currentDate: String) =
+            NewEventDialog().apply {
+                arguments = Bundle().apply {
+                    putString(ARG_CURRENT_DATE, currentDate)
+                }
+            }
     }
 
     override fun onDestroyView() {

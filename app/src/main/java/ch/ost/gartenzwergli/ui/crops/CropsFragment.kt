@@ -115,11 +115,9 @@ class CropsFragment : Fragment(), CoroutineScope {
 
     companion object {
 
-        // TODO: Customize parameter argument names
         const val ARG_COLUMN_COUNT = "column-count"
-        const val SEARCH_BAR_TEXT = "Search Crops"
+        const val SEARCH_BAR_TEXT = "search-crops"
 
-        // TODO: Customize parameter initialization
         @JvmStatic
         fun newInstance(searchBarText: String, columnCount: Int) =
             CropsFragment().apply {

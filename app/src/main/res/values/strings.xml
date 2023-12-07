@@ -47,4 +47,5 @@
     <string name="please_choose_a_sew_date">Please choose a sew date</string>
     <string name="search_box_text_selection">Search and select a crop to add</string>
     <string name="image_of_your_garden">Image of your garden</string>
+    <string name="planted_on">Planted on %1$s</string>
 </resources>
